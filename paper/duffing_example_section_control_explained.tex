@@ -1,0 +1,497 @@
+\section{Concrete reflected noisy cubic (Duffing-type) control system}
+\label{sec:duffing-example}
+
+We apply the theory to a stochastic cubic control model inspired by
+\cite{LippiActionError}. We retain its physical coefficients and baseline
+controller, replace hard saturation by reflection on a compact interval,
+and use the distributional learning field of \eqref{eq:mean-gradient}.
+These choices allow us to verify the mixing and differentiability hypotheses,
+prove existence of adaptive equilibria, and obtain explicit sufficient
+conditions for uniqueness and local stability.
+
+\subsection{Model and learning rule}
+\label{sec:duffing-loss}
+
+Let $X=[-2,2]$ and $\ThetaSet=\R^p$. The input-driven plant is
+\begin{equation}
+  x_{n+1}=\mathfrak r_2\!\left(1.05x_n+0.15x_n^3+u_n+\xi_n\right),
+  \label{eq:duffing-stochastic-plant}
+\end{equation}
+where $\mathfrak r_2:\R\to X$ is the continuous $8$-periodic reflection
+map, equal to the identity on $X$, with alternating slopes $+1$ and $-1$
+on consecutive intervals of length $4$. The independent noise variables
+$\xi_n$ have a common $C^2$ density satisfying
+\begin{equation}
+  q_\sigma(z)>0\quad(z\in\R),
+  \qquad q_\sigma,q_\sigma',q_\sigma''\in L^1(\R).
+  \label{eq:duffing-noise-assumption}
+\end{equation}
+Gaussian noise of variance $\sigma^2>0$ is the principal example.
+
+We use the control $u_n=-0.25x_n-g(x_n,\theta_n)$: the baseline changes
+the linear coefficient to $0.8$, while the compensator aims to cancel
+the deterministic residual
+\begin{align}
+  d(x)&:=0.15x^3,
+  \label{eq:duffing-residual}\\
+  \norm{d}_{L^\infty(X)}&=1.2.
+  \label{eq:duffing-residual-bound}
+\end{align}
+The compensator has the linear readout form
+\begin{equation}
+  g(x,\theta)=\theta^{\mathsf T}\psi(x),
+  \qquad \psi=(\psi_1,\ldots,\psi_p)^{\mathsf T}:X\to\R^p,
+  \label{eq:duffing-neural-readout}
+\end{equation}
+where the features $\psi_j$ are fixed $C^1$ functions. Learning updates
+their coefficients, so $g$ may be nonlinear in $x$ but is linear in
+$\theta$. The features may be outputs of fixed hidden layers of a neural
+network; alternatively, $\psi(x)=(1,x,x^2,x^3)^{\mathsf T}$ gives a
+polynomial compensator that can represent $d$ exactly. Set
+\begin{equation}
+  S_\psi:=\sup_{x\in X}\norm{\psi(x)}<\infty.
+  \label{eq:duffing-Spsi}
+\end{equation}
+The closed-loop dynamics is therefore
+\begin{equation}
+  x_{n+1}=\mathfrak r_2\!\left(
+    0.8x_n+d(x_n)-g(x_n,\theta_n)+\xi_n\right).
+  \label{eq:duffing-adaptive-plant}
+\end{equation}
+Under exact compensation, $g(\cdot,\theta)=d$, its update is
+$0.8$-Lipschitz in $x_n$ for each fixed noise realization. Since noise
+persists, the stationary object is a probability distribution, not the
+point $0$. Learning targets the residual $d$, rather than the process noise.
+
+For a frozen controller, write
+\begin{align}
+  F_\theta(x)&:=0.8x+d(x)-\theta^{\mathsf T}\psi(x),
+  \label{eq:duffing-Ftheta}\\
+  x_{n+1}&=\mathfrak r_2\!\left(F_\theta(x_n)+\xi_n\right).
+  \label{eq:reflected-duffing}
+\end{align}
+Let $P_\theta$ be its transfer operator and $\mu_\theta$ its unique
+invariant probability, whose existence is established below.
+
+The learning objective penalizes the compensation error and, optionally,
+departure from a nominal parameter $\theta_c\in\R^p$:
+\begin{align}
+  \ell_0(x,\theta)&:=\frac12\bigl(g(x,\theta)-d(x)\bigr)^2,
+  \label{eq:duffing-compensation-loss}\\
+  \ell(x,\theta)&:=\ell_0(x,\theta)
+    +\frac\lambda2\norm{\theta-\theta_c}^2,\qquad \lambda\ge0.
+  \label{eq:duffing-regularized-loss}
+\end{align}
+Since $\psi$ is independent of $\theta$,
+\begin{align}
+  \nabla_\theta\ell_0(x,\theta)
+    &=\bigl(g(x,\theta)-d(x)\bigr)\psi(x),
+  \label{eq:duffing-grad-loss}\\
+  D_\theta^2\ell_0(x,\theta)&=\psi(x)\psi(x)^{\mathsf T}\succeq0.
+  \label{eq:duffing-hessian-loss}
+\end{align}
+Here $A\succeq B$ means that $A-B$ is positive semidefinite;
+the quadratic form of the last matrix is $(v^{\mathsf T}\psi(x))^2$.
+Thus the distributional and reduced learning fields are
+\begin{align}
+  G(\mu,\theta)
+    &=\int_X\bigl(g(x,\theta)-d(x)\bigr)\psi(x)\,\dd\mu(x)
+      +\lambda(\theta-\theta_c),
+  \label{eq:duffing-learning-field-explicit}\\
+  \overline G(\theta)&=h(\theta)+\lambda(\theta-\theta_c),
+  \qquad h(\theta):=\int_X\nabla_\theta\ell_0(x,\theta)\,\dd\mu_\theta(x).
+  \label{eq:duffing-reduced-field}
+\end{align}
+The autonomous pair dynamics is
+\begin{equation}
+  \mu_{n+1}=P_{\theta_n}\mu_n,
+  \qquad \theta_{n+1}=\theta_n-\delta\Gammahat G(\mu_n,\theta_n),
+  \qquad \delta>0.
+  \label{eq:duffing-parameter-update}
+\end{equation}
+
+\subsection{Mixing and linear response}
+
+The frozen transition kernel and its density on $(-2,2)$ are
+\begin{align}
+  K_\theta(x,A)
+    &:=\int_\R\mathbf1_A\!\left(\mathfrak r_2(F_\theta(x)+z)\right)
+      q_\sigma(z)\,\dd z,
+  \label{eq:duffing-kernel}\\
+  k_\theta(x,y)
+    &=\sum_{m\in\mathbb Z}\left[
+      q_\sigma(y+8m-F_\theta(x))
+      +q_\sigma(4-y+8m-F_\theta(x))\right].
+  \label{eq:duffing-folded-density}
+\end{align}
+The noise is absolutely continuous, so reflection creates no boundary atoms.
+Fix a bounded open parameter region $\mathcal U\Subset\R^p$, and set
+\begin{align}
+  M_{\mathcal U}
+    &:=\sup_{\theta\in\overline{\mathcal U},\,x\in X}|F_\theta(x)|,
+  \label{eq:duffing-MU}\\
+  c_{\mathcal U}
+    &:=\min_{|z|\le2+M_{\mathcal U}}q_\sigma(z)>0,
+  \qquad \varepsilon_{\mathcal U}:=4c_{\mathcal U}\in(0,1).
+  \label{eq:duffing-doeblin-constant}
+\end{align}
+We work on $B_s(X)=B_w(X)=\SM(X)$ with the total-variation norm,
+and write $V(X)=\{\eta\in\SM(X):\eta(X)=0\}$ and $m_X$ for normalized
+Lebesgue measure on $X$.
+
+\begin{proposition}[Uniform frozen mixing]
+\label{prop:duffing-doeblin}
+For every $\theta\in\overline{\mathcal U}$,
+\begin{equation}
+  K_\theta(x,A)\ge\varepsilon_{\mathcal U}m_X(A)
+  \qquad(x\in X,\ A\in\mathcal B(X)).
+  \label{eq:duffing-doeblin}
+\end{equation}
+The operator $P_\theta$ has a unique invariant probability $\mu_\theta$,
+and
+\begin{align}
+  \norm{P_\theta\eta}_{\rm TV}
+    &\le(1-\varepsilon_{\mathcal U})\norm{\eta}_{\rm TV},
+    \qquad \eta\in V(X),
+  \label{eq:duffing-TV-contraction}\\
+  r(P_\theta|_{V(X)})&\le1-\varepsilon_{\mathcal U}<1,
+  \label{eq:duffing-spectral-gap}\\
+  \norm{R_\theta}_{V(X)\to V(X)}&\le\varepsilon_{\mathcal U}^{-1},
+    \qquad R_\theta:=(\Id-P_\theta)^{-1}|_{V(X)}.
+  \label{eq:duffing-resolvent-bound}
+\end{align}
+\end{proposition}
+
+\begin{proof}
+The first $m=0$ term in \eqref{eq:duffing-folded-density} gives
+$k_\theta(x,y)\ge q_\sigma(y-F_\theta(x))\ge c_{\mathcal U}$.
+Integration yields \eqref{eq:duffing-doeblin}. The Doeblin decomposition
+then gives the contraction on zero-mass measures and, by the contraction
+principle on probabilities, the unique invariant law. The spectral-gap
+and resolvent bounds follow from the contraction and the Neumann series.
+\end{proof}
+
+Positive noise supplies mixing uniformly on bounded parameter regions,
+without any hyperbolicity assumption on the cubic drift. It also yields
+strong differentiability. Indeed, set
+\begin{align}
+  M_F&:=\sup_{x\in X}\norm{D_\theta F_\theta(x)}=S_\psi,
+  \label{eq:duffing-MF}\\
+  C_P&:=\norm{q_\sigma'}_{L^1}S_\psi.
+  \label{eq:duffing-CP}
+\end{align}
+
+\begin{proposition}[Differentiability of the frozen family]
+\label{prop:duffing-P-differentiability}
+The map $\theta\mapsto P_\theta\in\mathcal L(\SM(X),\SM(X))$
+is continuously Fr\'echet differentiable, with
+\begin{equation}
+  \norm{D_\theta P_\theta[v]}_{\rm TV\to TV}\le C_P\norm{v}.
+  \label{eq:duffing-DP-bound}
+\end{equation}
+The stationary branch is continuously Fr\'echet differentiable and satisfies
+\begin{align}
+  D_\theta\mu_\theta[v]
+    &=R_\theta\bigl(D_\theta P_\theta[v]\bigr)\mu_\theta,
+  \label{eq:duffing-LR}\\
+  \norm{D_\theta\mu_\theta[v]}_{\rm TV}
+    &\le\frac{C_P}{\varepsilon_{\mathcal U}}\norm{v},
+    \qquad \theta\in\mathcal U.
+  \label{eq:duffing-Dmu-bound}
+\end{align}
+\end{proposition}
+
+\begin{proof}
+Write $K_\theta(x,\cdot)=(\mathfrak r_2)_\#\nu_{\theta,x}$, where
+$\dd\nu_{\theta,x}(z)=q_\sigma(z-F_\theta(x))\,\dd z$. Differentiation gives
+\[
+  D_\theta\nu_{\theta,x}[v]
+  =-q_\sigma'(z-F_\theta(x))D_\theta F_\theta(x)[v]\,\dd z.
+\]
+The $L^1$ Taylor remainder is bounded uniformly in $x$ by
+$\frac12\norm{q_\sigma''}_{L^1}S_\psi^2\norm{v}^2$.
+Since push-forward contracts total variation, this proves operator-norm
+differentiability and \eqref{eq:duffing-DP-bound}; the same translation
+estimate gives continuity of the derivative. Proposition~\ref{prop:physical-LR},
+together with Proposition~\ref{prop:duffing-doeblin}, gives the remaining claims.
+\end{proof}
+
+For Gaussian noise, $C_P=\sqrt{2/\pi}\,S_\psi/\sigma$; these strong-norm
+estimates are therefore not uniform as $\sigma\to0$.
+
+\subsection{Existence, uniqueness, and stability}
+
+Existence can be checked directly from the model, without computing
+the stationary measures.
+
+\begin{proposition}[Constructive existence of an adaptive equilibrium]
+\label{prop:duffing-constructive-existence}
+Let $\lambda>0$ and
+\begin{equation}
+  r>r_{\rm ex}:=\frac{(\norm{\theta_c}S_\psi+1.2)S_\psi}{\lambda}.
+  \label{eq:duffing-explicit-existence-radius}
+\end{equation}
+Then
+\begin{align}
+  \langle\overline G(\theta),\theta-\theta_c\rangle&>0,
+    \qquad \theta\in\partial B_r(\theta_c),
+  \label{eq:duffing-explicit-outward}\\
+  \deg(\overline G,B_r(\theta_c),0)&=1.
+  \label{eq:duffing-explicit-degree}
+\end{align}
+There exists a zero $\theta_*\in B_r(\theta_c)$, and every zero lies in
+$\overline B_{r_{\rm ex}}(\theta_c)$. For every $\delta>0$ and injective
+$\Gammahat$, this gives an invariant probability of the ambient STO:
+\begin{equation}
+  \rho_*:=\mu_{\theta_*}\otimes\delta_{\theta_*}.
+  \label{eq:duffing-equilibrium}
+\end{equation}
+\end{proposition}
+
+\begin{proof}
+For $w=\theta-\theta_c$, positivity of the squared term gives
+\begin{equation}
+\begin{aligned}
+  \langle\overline G(\theta),w\rangle
+  &=\lambda\norm{w}^2+\int_X(w^{\mathsf T}\psi)^2\,\dd\mu_\theta
+    +\int_X(\theta_c^{\mathsf T}\psi-d)w^{\mathsf T}\psi\,\dd\mu_\theta\\
+  &\ge\lambda\norm{w}^2-(\norm{\theta_c}S_\psi+1.2)S_\psi\norm{w}.
+\end{aligned}
+  \label{eq:duffing-radial-coercivity}
+\end{equation}
+This is strictly positive when $\norm{w}>r_{\rm ex}$, proving both
+the localization of all zeros and the outward condition. The straight-line
+homotopy to $\theta\mapsto\theta-\theta_c$ is nonzero on the boundary,
+so the degree is $1$. The existence property of Brouwer degree gives a zero,
+and the equilibrium correspondence yields \eqref{eq:duffing-equilibrium}.
+\end{proof}
+
+In particular, for $\theta_c=0$ the radius condition is simply
+\begin{equation}
+  r>1.2S_\psi/\lambda.
+  \label{eq:duffing-zero-anchor-radius}
+\end{equation}
+
+To obtain uniqueness and stability, we compare the regularization with
+the statistical feedback. Choose
+\begin{align}
+  \mathcal U_T&:=B_T(0),\qquad T>\norm{\theta_c}+r,
+  \label{eq:duffing-UT}\\
+  |F_\theta(x)|&\le\widehat M_T:=2.8+TS_\psi,
+    \qquad \theta\in\overline{\mathcal U_T},\ x\in X.
+  \label{eq:duffing-MT-explicit}
+\end{align}
+A valid Doeblin constant is
+$\underline\varepsilon_T:=4\min_{|z|\le4.8+TS_\psi}q_\sigma(z)>0$.
+For Gaussian noise this and the derivative bound become
+\begin{align}
+  \underline\varepsilon_T
+    &=\frac{4}{\sqrt{2\pi}\sigma}
+      \exp\!\left(-\frac{(4.8+TS_\psi)^2}{2\sigma^2}\right),
+  \label{eq:duffing-epsilonT-explicit}\\
+  \norm{q_\sigma'}_{L^1}&=\frac{\sqrt{2/\pi}}{\sigma},
+  \qquad C_P=\frac{\sqrt{2/\pi}}{\sigma}S_\psi.
+  \label{eq:duffing-gaussian-CP}
+\end{align}
+Set
+\begin{align}
+  M_{1,T}&:=(TS_\psi+1.2)S_\psi
+    \ge\sup_{x\in X,\,\theta\in\overline{\mathcal U_T}}
+      \norm{\nabla_\theta\ell_0(x,\theta)},
+  \label{eq:duffing-M1T-explicit}\\
+  L_{\rm fb}(T)&:=M_{1,T}\frac{C_P}{\underline\varepsilon_T}.
+  \label{eq:duffing-Lfb}
+\end{align}
+Differentiating the reduced field gives
+\begin{equation}
+  Dh(\theta)[v]
+  =\int_X\psi\psi^{\mathsf T}v\,\dd\mu_\theta
+   +\int_X(g(\cdot,\theta)-d)\psi\,\dd(D_\theta\mu_\theta[v]).
+  \label{eq:duffing-Dh}
+\end{equation}
+The first term is positive semidefinite; the second has operator norm
+at most $L_{\rm fb}(T)$. Writing $\operatorname{sym}A=(A+A^{\mathsf T})/2$,
+we obtain
+\begin{equation}
+  \operatorname{sym}D\overline G(\theta)
+  \succeq\bigl(\lambda-L_{\rm fb}(T)\bigr)\Id,
+  \qquad\theta\in\mathcal U_T.
+  \label{eq:duffing-symmetric-lower-bound}
+\end{equation}
+Thus sufficiently strong regularization dominates the statistical feedback,
+with a criterion involving only known model bounds.
+
+\begin{theorem}[Uniqueness in $\mathcal U_T$ and local exponential stability]
+\label{thm:duffing-main-results}
+Choose $r$ as in \eqref{eq:duffing-explicit-existence-radius} and
+$T>\norm{\theta_c}+r$. If
+\begin{equation}
+  \lambda>L_{\rm fb}(T),
+  \label{eq:duffing-feedback-dominance}
+\end{equation}
+then $\theta_*$ is the unique zero of $\overline G$ in $\mathcal U_T$.
+For every $\delta>0$ and injective $\Gammahat$, $\rho_*$ is consequently
+the unique invariant probability of $\STO_\delta$ whose controller
+parameter belongs to $\mathcal U_T$.
+
+If $\Gammahat$ is symmetric positive definite, there is $\delta_0>0$
+such that, for each $0<\delta<\delta_0$, the pair equilibrium is locally
+exponentially stable: there are a neighborhood $\mathcal N_\delta$,
+$C_\delta\ge1$ and $q_\delta\in(0,1)$ such that
+\begin{equation}
+\begin{aligned}
+  \norm{\mu_n-\mu_{\theta_*}}_{\rm TV}+\norm{\theta_n-\theta_*}
+  \le C_\delta q_\delta^n
+  \bigl(\norm{\mu_0-\mu_{\theta_*}}_{\rm TV}+\norm{\theta_0-\theta_*}\bigr)
+\end{aligned}
+  \label{eq:duffing-local-exp-convergence}
+\end{equation}
+for initial pairs in $\mathcal N_\delta$. In particular,
+\begin{equation}
+  \sup_{x\in X}|g(x,\theta_n)-g(x,\theta_*)|
+  \le S_\psi\norm{\theta_n-\theta_*}\longrightarrow0.
+  \label{eq:duffing-controller-convergence}
+\end{equation}
+The slow multipliers satisfy
+\begin{equation}
+  \lambda_j^{\rm slow}(\delta)
+  =1-\delta\lambda_j\!\left(\Gammahat D\overline G(\theta_*)\right)
+    +o(\delta),\qquad j=1,\ldots,p,
+  \label{eq:duffing-slow-multipliers}
+\end{equation}
+with asymptotic slow relaxation time of order $\delta^{-1}$.
+\end{theorem}
+
+\begin{proof}
+Integrating \eqref{eq:duffing-symmetric-lower-bound} along segments in
+the convex set $\mathcal U_T$ gives
+\begin{equation}
+  \langle\overline G(\theta_1)-\overline G(\theta_2),\theta_1-\theta_2\rangle
+  \ge(\lambda-L_{\rm fb}(T))\norm{\theta_1-\theta_2}^2.
+  \label{eq:duffing-strong-monotonicity}
+\end{equation}
+This proves uniqueness, since the existence ball lies in $\mathcal U_T$.
+At the zero, $\operatorname{sym}D\overline G(\theta_*)\succ0$ and
+$\Gammahat\succ0$ imply positive stability of
+$\Gammahat D\overline G(\theta_*)$.
+Propositions~\ref{prop:duffing-doeblin} and
+\ref{prop:duffing-P-differentiability} provide the spectral gap and joint
+$C^1$ regularity of $(\mu,\theta)\mapsto P_\theta\mu$; the learning field
+is affine in $\mu$ and $C^1$ in $\theta$. Theorem~\ref{thm:local-stability}
+and Proposition~\ref{prop:effective-jacobian-identification} therefore yield
+the stability estimate and slow multipliers. The controller estimate follows
+from the linear readout and \eqref{eq:duffing-Spsi}.
+\end{proof}
+
+For fixed $T>\norm{\theta_c}$, the conditions on $r$ and $\lambda$ hold
+for all sufficiently large $\lambda$. The bound may nevertheless be very
+conservative, especially for small noise: its failure does not imply instability.
+
+\begin{remark}[Role of the learning rate]
+\label{rem:duffing-learning-rate}
+For $\delta>0$ and injective $\Gammahat$, equilibria are determined by
+$\overline G(\theta_*)=0$, independently of $\delta$. The learning rate
+affects stability and convergence speed. Convergence of the adaptive pair
+implies neither convergence of noisy sample paths to $0$ nor exact compensation.
+\end{remark}
+
+\subsection{Exact compensation and small regularization}
+
+The response formula makes the feedback contribution explicit:
+\begin{equation}
+\begin{aligned}
+  D\overline G(\theta)[v]
+  &=\lambda v+\int_X\psi\psi^{\mathsf T}v\,\dd\mu_\theta\\
+  &\quad+\int_X\nabla_\theta\ell_0(x,\theta)\,
+    \dd\!\left[R_\theta(D_\theta P_\theta[v])\mu_\theta\right](x).
+\end{aligned}
+  \label{eq:duffing-explicit-reduced-jacobian}
+\end{equation}
+At equilibrium, this is precisely the effective slow Jacobian:
+\begin{equation}
+  D\overline G(\theta_*)=H_*+C_*R_*B_*=\mathcal J_*.
+  \label{eq:duffing-jacobian-identification}
+\end{equation}
+For any bounded neighborhood $\mathcal U$ of $\theta_*$, the sharper estimate
+\[
+  \operatorname{sym}D\overline G(\theta_*)\succeq
+  \left(\lambda+
+    \lambda_{\min}\!\left(\int_X\psi\psi^{\mathsf T}\,\dd\mu_{\theta_*}\right)
+    -\norm{g(\cdot,\theta_*)-d}_{L^\infty(X)}
+      S_\psi\frac{C_P}{\varepsilon_{\mathcal U}}\right)\Id
+\]
+shows that statistical feedback is controlled by the equilibrium misfit,
+rather than the bound $M_{1,T}$ over an entire parameter region.
+
+\begin{remark}[The exactly realizable case ($\lambda=0$)]
+\label{rem:duffing-realizable-case}
+If $g(\cdot,\theta_*)=d$ and $\lambda=0$, then
+\[
+  C_*=0,\qquad
+  \mathcal J_*=H_*=\int_X\psi(x)\psi(x)^{\mathsf T}\,\dd\mu_{\theta_*}(x).
+\]
+Positive definiteness of this Gram matrix and of $\Gammahat$ therefore
+gives local exponential stability for sufficiently small positive learning
+rates, without regularization.
+\end{remark}
+
+The next result shows that this stable regime persists under a small
+quadratic penalty, with an equilibrium shift of order $\lambda$.
+
+\begin{proposition}[Persistence under small regularization]
+\label{prop:duffing-small-regularization}
+Assume that $\psi_1,\ldots,\psi_p$ are linearly independent as functions
+on $X$ and that $g(\cdot,\theta_{\mathrm{opt}})=d$ for some
+$\theta_{\mathrm{opt}}\in\R^p$. Define
+\[
+  Q_{\mathrm{opt}}:=\int_X\psi(x)\psi(x)^{\mathsf T}
+    \,\dd\mu_{\theta_{\mathrm{opt}}}(x),
+  \qquad \overline G_\lambda(\theta):=h(\theta)+\lambda(\theta-\theta_c).
+\]
+For fixed $\theta_c\in\R^p$ and symmetric positive definite $\Gammahat$,
+there are $\lambda_0>0$, a neighborhood $U_{\mathrm{opt}}$ of
+$\theta_{\mathrm{opt}}$, and a $C^1$ branch $\theta_*^\lambda$,
+$0\le\lambda<\lambda_0$, giving the unique zero of $\overline G_\lambda$
+in $U_{\mathrm{opt}}$. Moreover,
+\[
+  \theta_*^0=\theta_{\mathrm{opt}},\qquad
+  \theta_*^\lambda=\theta_{\mathrm{opt}}
+    -\lambda Q_{\mathrm{opt}}^{-1}(\theta_{\mathrm{opt}}-\theta_c)+o(\lambda),
+  \qquad
+  \norm{g(\cdot,\theta_*^\lambda)-d}_{L^\infty(X)}=O(\lambda).
+\]
+For each such $\lambda$, $(\mu_{\theta_*^\lambda},\theta_*^\lambda)$ is
+locally exponentially stable for all sufficiently small positive learning rates.
+\end{proposition}
+
+\begin{proof}
+Invariance and the Doeblin minorization give
+$\mu_{\theta_{\mathrm{opt}}}\ge\varepsilon_{\mathcal U}m_X$ on a bounded
+parameter neighborhood. For $v\ne0$, continuity and linear independence
+of the features imply
+\[
+  v^{\mathsf T}Q_{\mathrm{opt}}v
+  \ge\varepsilon_{\mathcal U}\int_X|v^{\mathsf T}\psi(x)|^2\,\dd m_X(x)>0.
+\]
+Thus $Q_{\mathrm{opt}}\succ0$. Exact compensation gives
+$h(\theta_{\mathrm{opt}})=0$ and
+$Dh(\theta_{\mathrm{opt}})=Q_{\mathrm{opt}}$, since the response term in
+\eqref{eq:duffing-Dh} vanishes. The implicit-function theorem gives the
+locally unique branch, and differentiating its defining equation yields
+\[
+  Q_{\mathrm{opt}}
+    \left.\frac{d\theta_*^\lambda}{d\lambda}\right|_{\lambda=0}
+    +\theta_{\mathrm{opt}}-\theta_c=0.
+\]
+This proves the expansion; the misfit bound follows from
+$\norm{g(\cdot,\theta_*^\lambda)-d}_{L^\infty(X)}
+\le S_\psi\norm{\theta_*^\lambda-\theta_{\mathrm{opt}}}$.
+Finally, $D\overline G_\lambda(\theta_*^\lambda)\to Q_{\mathrm{opt}}$
+as $\lambda\to0$, so its symmetric part stays positive definite after
+reducing $\lambda_0$. Theorem~\ref{thm:local-stability} and
+Proposition~\ref{prop:effective-jacobian-identification}, with the frozen
+mixing and differentiability proved above, give local exponential stability.
+\end{proof}
+
+% Retained from the original file: the numerical section is included here.
+\input{Empirical_test}

@@ -1,0 +1,5 @@
+=== Persistent Excitation Metrics ===
+1. Spectral Properties:
+   - lambda_min(H_*) [Local, sigma=0.10]: 1.45547e-04
+   - lambda_min(H_*) [Global, sigma=0.18]: 4.16428e-03
+   - Increase Factor: 28.61

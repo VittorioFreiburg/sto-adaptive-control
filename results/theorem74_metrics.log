@@ -1,0 +1,29 @@
+=== THEOREM 7.4 METRICS & RELAXATION RATES ===
+Date: 19-Oct-2026 11:58:27
+Plant parameters: A = 1.05, B = 0.15, x_ref = 0.0, sigma = 0.18
+True unregularized optimum theta_opt: [0.0000, 0.0000, 0.0000, 0.1500]^T
+Empirical equilibrium theta_*^lambda:  [-0.00001, 0.00699, 0.00004, 0.12435]^T
+Prop 7.7 linear prediction:           [-0.00000, 0.00460, 0.00009, 0.12961]^T
+Norm of empirical bias ||theta_*^lambda - theta_opt||: 2.65870e-02
+Norm of linear bias ||theta_pred - theta_opt||:        2.09004e-02
+Reduced field residual ||G_bar_lambda(theta_*)||_2:    7.57091e-04
+
+Spectral Properties at sigma = 0.18:
+  lambda_min(H_*) = 6.97237e-03
+  lambda_max(H_*) = 1.00834
+  Unregularized theoretical rate lambda_min(H_*):           6.97237e-03
+  Regularized theoretical rate lambda_min(H_*) + lambda:     7.97237e-03
+  Theoretical rate increase factor:                        14.34%
+
+Empirical Decay Slopes in Exponential Regime (ln ||theta_n - theta_*^lambda|| = a + s*n):
+delta      | s(delta)       | -s(delta)/delta | Pred: H_*+lam  | Rel Error 
+-------------------------------------------------------------------------
+0.005      | -8.78266e-05   | 1.75653e-02    | 7.97237e-03    | 120.33%
+0.020      | -1.88574e-04   | 9.42872e-03    | 7.97237e-03    |  18.27%
+0.050      | -3.37752e-04   | 6.75503e-03    | 7.97237e-03    |  15.27%
+0.080      | -5.30385e-04   | 6.62981e-03    | 7.97237e-03    |  16.84%
+
+Unregularized comparison (delta = 0.05, lambda = 0):
+  s(0.05, unreg)       = -2.43739e-04
+  -s/delta (unreg)     = 4.87477e-03 (Theoretical lambda_min(H_*) = 6.97237e-03, Rel Error: 30.08%)
+  Empirical speedup from lambda = 1e-3: 38.57% (Theory: 14.34%)

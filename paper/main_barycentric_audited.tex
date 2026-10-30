@@ -1,0 +1,2488 @@
+\documentclass[11pt]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{lmodern}
+\usepackage{amsmath,amssymb,amsthm,mathtools}
+\usepackage{mathrsfs}
+\usepackage{bm}
+\usepackage{geometry}
+\usepackage{microtype}
+\usepackage{enumitem}
+\usepackage{booktabs}
+\usepackage{tikz}
+\usetikzlibrary{positioning, fit, backgrounds, arrows.meta}
+%\usepackage{showkeys}
+\usepackage{xcolor}
+\usepackage{hyperref}
+
+\geometry{margin=1in}
+% Figure PDFs live in ../figures/ in the repository layout. The extra search paths
+% also let the sources compile when the PDFs are placed next to the .tex files
+% (e.g. in a flat arXiv upload).
+\usepackage{graphicx}
+\graphicspath{{../figures/}{./}{figures/}}
+% ============================================================================
+% --- Semantic & Bibliographic Discovery Metadata ---.
+% ============================================================================
+
+% --- Layer 3: XMP metadata (Dublin Core / ORCID / Crossref compatible) ------
+\usepackage{hyperxmp}
+
+% --- Layer 1 + 3: PDF internal metadata + XMP fields -----------------------
+\hypersetup{%
+  colorlinks       = true,
+  linkcolor        = blue!55!black,
+  citecolor        = blue!55!black,
+  urlcolor         = blue!55!black,
+  % ── Core bibliographic fields ──────────────────────────────────────────────
+  pdftitle    = {Autonomous Neural Adaptive Control as a Self-Consistent
+                 Transfer Operator: A Barycentric State-Parameter Formulation},
+  pdfauthor   = {Stefano Galatolo, Vittorio Lippi},
+  pdfsubject  = {%
+    A mathematical framework unifying neural adaptive control and transfer
+    operator theory. Introduces the Self-Consistent Transfer Operator (STO)
+    on the extended state-parameter space, proves existence and uniqueness
+    of adaptive equilibria via Brouwer degree theory, establishes local
+    exponential stability under time-scale separation, and derives the
+    linear response identity linking the reduced learning field Jacobian
+    to the slow adaptive dynamics. Validated on a reflected noisy
+    Duffing-type oscillator with neural residual compensator.},
+  pdfkeywords = {%
+    adaptive control,
+    neural network control,
+    self-consistent transfer operator,
+    closed-loop learning,
+    barycentric formulation,
+    state-parameter space,
+    Brouwer degree theory,
+    invariant measure,
+    Wasserstein contraction,
+    time-scale separation,
+    learning rate optimization,
+    action error,
+    distributional shift,
+    performative prediction,
+    Duffing oscillator,
+    nonlinear control,
+    Lyapunov stability,
+    reinforcement learning,
+    online adaptation,
+    persistent excitation,
+    identifiability trap,
+    monokinetic measure,
+    frozen dynamics,
+    spectral gap,
+    linear response,
+    reduced learning field,
+    neural residual compensator,
+    stochastic dynamical systems,
+    ergodic theory,
+    measure-valued dynamics,
+    control theory,
+    system identification,
+    robotics,
+    exoskeleton control,
+    Vittorio Lippi,
+    Stefano Galatolo,
+    Calejo},
+  pdfcreator  = {pdfLaTeX},
+  pdfproducer = {pdfLaTeX},
+  % ── Extended info dictionary ───────────────────────────────────────────────
+  pdfinfo     = {%
+    ORCID       = {0000-0001-5520-8974},
+    Affiliation = {Calejo Hybrid Intelligence AB},
+    Cite        = {Galatolo, S., Lippi, V. (2026). Autonomous Neural Adaptive
+                   Control as a Self-Consistent Transfer Operator: A Barycentric
+                   State-Parameter Formulation.},
+    RelatedWork = {Lippi 2026 ICINCO; Galatolo CMP 2022;
+                   Hauswirth et al. 2024; Vernade et al. 2026},
+    License     = {CC-BY-4.0},
+    CodeRepository = {https://github.com/VittorioFreiburg/sto-adaptive-control}%
+  },
+  % ── XMP / Dublin Core fields (via hyperxmp) ────────────────────────────────
+  pdfcopyright     = {Copyright 2026 Stefano Galatolo, Vittorio Lippi. CC-BY-4.0.},
+  pdflicenseurl    = {https://creativecommons.org/licenses/by/4.0/},
+  pdfcontacturl    = {https://orcid.org/0000-0001-5520-8974},
+  pdfcontactemail  = {vittorio.lippi@calejo.ai},
+  pdftype          = {Text},
+  pdflang          = {en},
+  pdfmetalang      = {en}
+}
+
+% --- Layer 2: Source-level semantic comments for LLM / RAG ingestion ---------
+% These lines are invisible in the PDF but parsed by any system reading .tex
+%
+% @meta:title        Autonomous Neural Adaptive Control as a Self-Consistent Transfer Operator
+% @meta:subtitle     A Barycentric State-Parameter Formulation
+% @meta:author       Stefano Galatolo, Vittorio Lippi
+% @meta:orcid        Galatolo: 0000-0001-9329-8936; Lippi: 0000-0001-5520-8974
+% @meta:affiliation  Galatolo: Universita di Pisa, Italy; Lippi: Calejo Hybrid Intelligence AB, Mellansjo, Sweden
+% @meta:email        vittorio.lippi@calejo.ai
+% @meta:year         2026
+% @meta:venue        Preprint
+% @meta:language     en
+% @meta:license      CC-BY-4.0
+% @meta:code         https://github.com/VittorioFreiburg/sto-adaptive-control
+%
+% @meta:abstract     We study autonomous neural adaptive control when the
+%   controller changes the closed-loop dynamics while data generated by those
+%   same dynamics drive the subsequent parameter update. We represent this
+%   feedback by a self-consistent transfer operator (STO) on the extended
+%   state-parameter space. The STO factors through a single-controller
+%   reduction map, proving that every invariant measure represents a single
+%   controller. For positive learning rate and injective parameter update,
+%   stationary states biject with zeros of the reduced learning field.
+%   Brouwer degree gives existence without convexity; a spectral gap yields
+%   local exponential stability at rate O(delta^{-1}). Linear response
+%   identifies the Jacobian of the reduced learning field with the matrix
+%   governing the slow adaptive dynamics. Validated on a reflected noisy
+%   Duffing oscillator with neural residual compensator.
+%
+% @meta:keywords     adaptive control, neural network control,
+%   self-consistent transfer operator, closed-loop learning, barycentric
+%   formulation, Brouwer degree, invariant measure, Wasserstein contraction,
+%   time-scale separation, learning rate optimization, action error,
+%   distributional shift, performative prediction, Duffing oscillator,
+%   Lyapunov stability, reinforcement learning, online adaptation,
+%   persistent excitation, monokinetic measure, spectral gap,
+%   linear response, reduced learning field, ergodic theory
+%
+% @meta:contribution Introduces the Self-Consistent Transfer Operator (STO)
+%   framework for autonomous neural adaptive control. Proves one-step
+%   monokinetic collapse, existence/uniqueness of equilibria via degree
+%   theory, local exponential stability under time-scale separation,
+%   and the linear response identity for the reduced learning field.
+%
+% @meta:related      Lippi 2026 "Learning Changes the World" ICINCO;
+%   Galatolo-Tanzi CMP 2022 transfer operators; Hauswirth et al. 2024
+%   optimization-as-control; Vernade et al. 2026 RL-control foundations
+%
+% @meta:questions    What is the self-consistent transfer operator?
+%   How does the barycentric formulation work for adaptive control?
+%   What is the action error in neural control? How does time-scale
+%   separation ensure stability in closed-loop learning? What is the
+%   reduced learning field? How does Brouwer degree prove existence of
+%   adaptive equilibria? What is monokinetic collapse? How are performative
+%   prediction and adaptive control related?
+%
+% ============================================================================
+
+\newtheorem{theorem}{Theorem}[section]
+\newtheorem{proposition}[theorem]{Proposition}
+\newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{corollary}[theorem]{Corollary}
+\theoremstyle{definition}
+\newtheorem{definition}[theorem]{Definition}
+\newtheorem{assumption}[theorem]{Assumption}
+\theoremstyle{remark}
+\newtheorem{remark}[theorem]{Remark}
+
+\newcommand{\SM}{\mathrm{SM}}
+\newcommand{\Prob}{\mathcal{P}}
+\newcommand{\ProbThetaOne}{\mathcal{P}_{\Theta}^{1}}
+\newcommand{\STO}{\mathcal{L}}
+\newcommand{\Lin}{L}
+\newcommand{\Id}{\mathrm{Id}}
+\newcommand{\dd}{\,\mathrm{d}}
+\newcommand{\norm}[1]{\left\lVert #1\right\rVert}
+\newcommand{\R}{\mathbb{R}}
+%\newcommand{\ThetaSet}{\boldsymbol{\Theta}}
+\newcommand{\ThetaSet}{\Theta}
+\newcommand{\Gammahat}{\widehat{\Gamma}}
+\newcommand{\Z}{\mathsf{Z}}
+\newcommand{\Mmono}{\mathscr{M}_{\mathrm{mono}}}
+\newcommand{\Wone}{W_1}
+
+\title{Autonomous Neural Adaptive Control as a Self-Consistent Transfer Operator}
+\author{Stefano Galatolo \and Vittorio Lippi}
+\date{\today}
+
+\begin{document}
+\maketitle
+
+
+\begin{abstract}
+We study autonomous neural adaptive control when the controller changes the closed-loop dynamics while data generated by those same dynamics drive the subsequent parameter update. The physical state distribution and the controller must therefore be treated as a coupled dynamical system.
+
+We represent this feedback by a self-consistent transfer operator on the extended space \(X\times\Theta\), where \(X\) is the physical phase space and \(\Theta\) is the controller parameter space.  We represent the state of the coupled system by a probability measure on this extended space, selecting a single controller through the barycenter of its parameter marginal.
+
+Assuming that each frozen controller admits a unique invariant physical distribution \(\mu_\theta\), we characterize adaptive equilibria as the pairs \((\mu_\theta,\theta)\) at which the mean learning update vanishes. This reduces the stationary problem to a finite-dimensional equation. We establish existence by Brouwer degree under continuity and suitable boundary conditions, without requiring global convexity of the learning problem, and reduce uniqueness to uniqueness of the corresponding zero.
+
+Under suitable differentiability assumptions, a spectral gap for the frozen physical transfer operator, and positivity of the real parts of the eigenvalues of the effective learning Jacobian, we prove local exponential stability for sufficiently small positive learning rates. Thus both the physical statistics and the controller converge to a stationary pair from nearby initial states. Linear response identifies the effective Jacobian, including the contribution arising from controller-induced changes in the stationary physical distribution, and connects the reduced equilibrium equation with the slow adaptive dynamics. We also show that the slow relaxation time scales inversely with the learning rate.
+
+A reflected noisy Duffing-type system with a neural residual compensator provides a concrete application with explicit sufficient conditions for existence, uniqueness, and local stability. Numerical experiments illustrate the coupled statistical and learning dynamics and the role of time-scale separation.
+\end{abstract}
+
+\textbf{Keywords:} Self-consistent transfer operators, Adaptive control, Linear response, Action error, Coupled dynamical systems \\
+\textbf{Mathematics Subject Classification (2020):} 37A30 $\cdot$ 37H05 $\cdot$ 93C40 $\cdot$ 68T07
+
+\tableofcontents
+
+\section{Introduction}
+
+
+Learning-based control, including reinforcement learning and neural adaptive control, is becoming an increasingly important approach to influencing the behavior of complex dynamical systems, with applications ranging from robotic locomotion and manipulation to flow and fluids control \cite{TangEtAl2025}, \cite{BruntonEtAl2020}. By learning from interactions with the controlled system, these methods offer ways to design feedback policies when accurate models are unavailable or difficult to obtain \cite{Recht2019} \cite{Annaswamy2023}. Their growing use motivates fundamental mathematical questions about the dynamics generated when learning and physical evolution remain coupled.
+
+In this setting, adaptation modifies the dynamics that produces the data, while the resulting statistical behavior drives subsequent adaptation.
+Online adaptation therefore closes a feedback loop,
+\[
+  \text{controller parameters}
+  \longrightarrow
+  \text{state distribution}
+  \longrightarrow
+  \text{learning update}
+  \longrightarrow
+  \text{controller parameters}.
+\]
+
+Understanding this feedback requires a theory of the joint evolution of physical statistics and controller parameters: whether stationary configurations exist, under what conditions they are stable, and how the time scales of physical relaxation and learning determine convergence. These questions place continuously adapting control systems within the broader study of nonlinear dynamics and its statistical properties.
+
+
+An important tool in this context is linear response theory,
+which describes how statistical averages change to first order
+under small perturbations of the dynamics.
+For stationary systems, this amounts to differentiating the
+invariant measure; see \cite{Baladi2014} for a survey in
+deterministic dynamics and
+\cite{HairerMajda2010,GalatoloGiulietti2019,GalatoloLucarini2026}
+for stochastic systems.
+Here, we use the response of the invariant distribution associated
+with a fixed controller to quantify how changes in its parameters
+affect physical statistics and adaptive stability.
+
+
+
+We study these questions through a self-consistent transfer
+operator formulation of the coupled evolution of the physical
+state distribution and the controller parameters.
+The controller determines how the physical distribution evolves,
+while the parameters are updated using the loss gradient averaged
+over the current distribution.
+In this description, an adaptive equilibrium consists of
+a controller and an invariant state distribution for which
+this averaged  loss gradient vanishes.
+
+When each fixed controller admits a unique invariant distribution,
+the equilibrium condition becomes a finite-dimensional equation:
+the loss gradient, averaged over the invariant distribution
+generated by that controller, must vanish.
+This is a self-consistency equation for the controller parameters,
+analogous to those used in the theory of self-consistent transfer
+operators.
+Under suitable assumptions, this reduction allows us to establish
+existence and uniqueness of adaptive equilibria and, through linear
+response, to give explicit conditions for their local exponential
+stability and convergence from nearby initial states.
+
+
+We focus on controllers parameterized by neural networks. Neural networks have long been used as flexible models and
+controllers for nonlinear systems
+\cite{NarendraParthasarathy1990,hunt1992neural,
+sjoberg1995nonlinear,levine2016end}.
+Precisely because of the feedback between control, physical
+dynamics, and state statistics, a neural controller may
+perform differently from what its training performance
+would suggest once it is deployed to control the physical
+system using observations of that system's state.
+
+
+%Neural networks have long been used as flexible models and controllers for
+%nonlinear systems \cite{NarendraParthasarathy1990, hunt1992neural, sjoberg1995nonlinear, levine2016end}. 
+%{\color{blue}<--arricchire citazioni qui.} {\color{black} Added classic references for NN in nonlinear control.}
+%Their deployment inside a
+%feedback loop, however, produces a difficulty that is absent from ordinary supervised learning: changing the controller changes the trajectory of the
+%plant and therefore changes the distribution of the future data on which the
+%controller is evaluated and updated.  The state distribution available during
+%offline training is consequently not, in general, the distribution generated
+%after deployment.
+
+
+
+%This mechanism is central to the analysis of \cite{LippiActionError}, which
+%distinguishes the bias already introduced by closed-loop data collection, the
+%deployment-induced \emph{Action Error}, and the subsequent \emph{Tracking
+%Error} associated with the continuing displacement of relevant optimal
+%parameters.  Even if the initial identification bias were absent, deploying a
+%controller changes the closed-loop dynamics and hence the state distribution.
+
+This deployment-induced mismatch, or \emph{Action Error}, is a critical bottleneck for dynamic physical systems. In human-inspired posture control, sensory feedback inevitably correlates the system's state with controlled inputs,  complicating the offline identification of learned predictors and necessitating online adaptation \cite{lippi2018prediction}. Similarly, in the control of lower-limb exoskeletons, static offline models struggle with phase transitions, requiring continuous neural learning to maintain smooth, transparent tracking \cite{lippi2021icinco}. 
+To formalize these sequential failure modes, \cite{LippiActionError} introduces a three-part taxonomy: the initial \emph{Closed-Loop Identification Bias} caused by unmeasured process noise, the deployment-induced \emph{Action Error} which shifts the physical state distribution, and the continuous \emph{Tracking Error} encountered during online adaptation. 
+The present self-consistent transfer operator framework
+provides a mathematical description of this interaction
+and conditions under which the physical distribution and
+the learning parameters converge jointly to an adaptive
+equilibrium.
+%The present self-consistent transfer operator (STO) framework specifically formalizes and resolves the Action Error and Tracking Error phases by treating the physical state distribution and the learning algorithm as a single coupled autonomous dynamical system.
+
+
+Online adaptation may also face an identifiability problem:
+successful regulation can reduce the excitation needed
+to distinguish different controller parameters
+\cite{LippiActionError,Annaswamy2023}.
+Here we focus on the coupled stationarity problem underlying the  Action Error.
+
+
+
+%Attempting to minimize these errors online presents a fundamental tension known as the \emph{Identifiability Trap} \cite{LippiActionError}. As historically recognized in adaptive control \cite{Annaswamy2023}, stabilizing the physical equilibrium minimizes operational cost but starves the neural network of the dynamic variance, or persistent excitation, required to learn the underlying system dynamics. Furthermore, unmitigated distributional shifts can drive agents into unsafe, out-of-distribution (OOD) state spaces, prompting the modern need for strict control-theoretic constraints, such as Lyapunov density models, to bound exploration \cite{sinha2023systemlevelviewoutofdistributiondata, kang2022lyapunovdensitymodelsconstraining}. 
+%Achieving a valid adaptive equilibrium therefore requires simultaneous physical stationarity and learning stationarity, a balance that mandates the strict time-scale separation analyzed in this work.
+%An adaptive equilibrium requires simultaneous stationarity
+%of the physical distribution and of the learning update.
+%Its stability depends on their interaction; below, we give
+%sufficient conditions for local convergence when adaptation
+%is slow relative to the relaxation of the physical dynamics.
+
+%To study this ongoing adaptation, we model the physical
+%system and the learning algorithm jointly as an autonomous
+%dynamical system, whose state comprises the physical state
+%distribution and the controller parameters.
+
+
+
+
+Related feedback mechanisms between learning and data distributions
+arise in several settings. In imitation learning, the learned policy
+determines the states encountered during deployment
+\cite{RossGordonBagnell2011}. In performative prediction, a stable
+model is optimal for the distribution it induces
+\cite{PerdomoEtAl2020}, with stateful extensions retaining dependence
+on the current distribution \cite{BrownHodKalemaj2022}.
+Stochastic approximation with parameter-dependent Markovian data
+also accounts for evolving sampling statistics
+\cite{KondaTsitsiklis2003,LiWai2022,LiuLiWai2024},
+while performative reinforcement learning allows policies to modify
+the environment's transition and reward mechanisms
+\cite{MandalEtAl2023}.
+Feedback-based optimization similarly treats the optimizer and
+physical process as a coupled dynamical system
+\cite{HauswirthEtAl2024}.
+These approaches draw on a range of mathematical tools, including
+online learning and regret bounds, contraction arguments,
+stochastic approximation, and Lyapunov stability theory.
+
+Our approach uses the physical transfer operators to derive
+properties of the distributional response from the underlying
+dynamics. This makes topological and spectral tools available:
+degree theory gives existence criteria without global convexity,
+while linear response quantifies how changes in physical
+statistics contribute to adaptive stability and relaxation rates.
+The resulting guarantees concern local convergence of both the
+physical distribution and the controller parameters, under
+regularity and mixing assumptions on the physical dynamics.
+
+We now introduce informally the mathematical formulation of the adaptive
+control systems considered in this paper.
+Let $\mu_n\in\Prob(X)$ denote the physical state distribution
+on the state space $X$ at time $n$, and let
+$\theta_n\in\ThetaSet\subset\R^p$ denote the controller parameters.
+For each $\theta$, a Markov transfer operator $P_\theta$
+describes the evolution of the physical distribution under
+that controller.
+
+The controller parameters are updated using
+$G(\mu,\theta)\in\R^p$, the gradient of a loss function with
+respect to $\theta$, averaged over the current physical
+distribution $\mu$; see \eqref{eq:mean-gradient}.
+With learning rate $\delta>0$ and preconditioning matrix
+$\Gammahat$, the coupled autonomous dynamics is
+\begin{equation}
+  \mu_{n+1}=P_{\theta_n}\mu_n,
+  \qquad
+  \theta_{n+1}=\theta_n-\delta\Gammahat G(\mu_n,\theta_n).
+  \label{eq:intro-pair-dynamics}
+\end{equation}
+Thus the controller determines the evolution of the physical
+distribution, while that distribution determines the averaged
+gradient used to update the controller.
+
+The purpose of this paper is to place \eqref{eq:intro-pair-dynamics} in a
+transfer-operator framework without introducing artificial stationary states
+corresponding to simultaneously deployed ensembles of controllers.  We use the
+extended space
+\[
+  \Z=X\times\ThetaSet
+\]
+and write \(\ProbThetaOne(\Z)\) for the ambient probabilities having finite
+first moment in the parameter coordinate; the formal definition is given in
+Section~2.  We embed a physical distribution--controller pair  in \(\ProbThetaOne(\Z)\) as
+\[
+  \iota(\mu,\theta)=\mu\otimes\delta_\theta.
+\]
+
+
+We call measures of the form $\mu\otimes\delta_\theta$
+{\em monokinetic} and denote their collection by $\Mmono$.
+
+
+For an arbitrary joint distribution \(\rho\in\ProbThetaOne(\Z)\), we extract its physical marginal \(\mu_\rho\) alongside a single effective controller from its parameter marginal. A natural and convenient choice for this controller is the barycenter
+\[
+  \bar\theta_\rho
+  =\int_{\Z}\vartheta\,\dd\rho(x,\vartheta)
+\]
+which defines the single-controller reduction
+\[
+  \mathcal R(\rho)=(\mu_\rho,\bar\theta_\rho).
+\]
+%{\color{blue} riscrivere-prima e dopo} {\color{black} Rewritten to improve logical flow.}
+
+
+With these notations we can define the joint evolution of the statistical state and the control parameters by the following operator
+  
+\begin{equation}
+  \boxed{
+  \STO_\delta
+  =\iota\circ\Phi_\delta\circ\mathcal R,}
+  \label{eq:intro-factorization}
+\end{equation}
+where
+\[
+  \Phi_\delta(\mu,\theta)
+  =\bigl(P_\theta\mu,
+         \theta-\delta\Gammahat G(\mu,\theta)\bigr).
+\]
+
+
+  This is a nonlinear Markov operator and has the standard
+self-consistent transfer operator form
+\[
+  \STO_\delta(\rho)=\Lin_{\delta,\rho}\rho.
+\]
+Here the current statistical state $\rho$ selects a linear
+Markov operator $\Lin_{\delta,\rho}$, which is then applied
+to $\rho$ itself.
+Thus, each selected operator is linear, while the dependence
+of its selection on the evolving distribution makes the
+resulting dynamics nonlinear.
+\footnote{For fixed $\rho$, define
+\[
+  \Lin_{\delta,\rho}\nu
+  :=
+  \bigl(P_{\bar\theta_\rho}(\pi_X)_\#\nu\bigr)
+  \otimes
+  \delta_{\bar\theta_\rho
+  -\delta\widehat\Gamma G(\mu_\rho,\bar\theta_\rho)}.
+\]
+Both the physical transfer operator and the updated controller
+parameter are fixed by $\rho$. Thus this expression is linear
+in $\nu$, preserves positivity and total mass, and satisfies
+$\STO_\delta(\rho)=\Lin_{\delta,\rho}\rho$.
+See Section~\ref{2.3} for the corresponding Markov kernel construction.}
+See \cite{GalatoloCMP} for a general introduction to this
+approach.
+  
+ In particular,
+\[
+  \STO_\delta\bigl(\ProbThetaOne(\Z)\bigr)
+  \subseteq\Mmono,
+\]
+so every invariant probability measure is automatically monokinetic. 
+
+
+For a positive learning rate and an injective preconditioning
+matrix $\widehat\Gamma$, adaptive equilibria are characterized by
+
+\begin{equation}
+ P_{\theta_*}\mu_*=\mu_* ,
+  \qquad
+  G(\mu_*,\theta_*)=0.
+  \label{eq:intro-equilibrium-system}
+\end{equation}
+
+
+
+\paragraph{Main contributions.}
+Our main contribution is to formulate the coupled evolution
+of physical statistics and controller parameters within
+the theory of self-consistent transfer operators, making
+its operator, spectral, and linear-response methods
+available for the analysis of adaptive equilibria.
+
+When each frozen controller has a unique invariant physical
+distribution, the stationary problem reduces to an equation
+in the finitely many controller parameters. This reduction
+allows us to apply topological degree and finite-dimensional
+uniqueness criteria. Under suitable regularity and mixing
+assumptions, linear response also identifies the derivative
+of the reduced field with the matrix governing slow adaptive
+stability. The framework thus leads to explicit sufficient
+conditions for existence, uniqueness, and local attraction,
+which we verify in a simple but nontrivial stochastic
+control model. The main results are as follows.
+
+\begin{enumerate}[label=(\roman*)]
+
+  \item \emph{Stationary reduction and uniqueness.}
+  For positive learning rate and injective $\Gammahat$,
+  suppose that each fixed controller $\theta$ admits a unique
+  invariant physical distribution $\mu_\theta$ in a prescribed
+  Banach space of measures $B_s(X)$
+  (Section~\ref{4}).
+  Adaptive equilibria in this class then correspond bijectively
+  to solutions of
+  \[
+    \overline G(\theta):=G(\mu_\theta,\theta)=0,
+  \]
+  where $\overline G$ is the loss gradient averaged over the
+  invariant distribution generated by the controller itself
+  (Theorem~\ref{thm:equilibrium-correspondence}).
+  Uniqueness reduces to uniqueness of a zero of this
+  finite-dimensional field
+  (Corollary~\ref{cor:reduced-global-uniqueness});
+  under the differentiability assumptions of Section~\ref{LR},
+  invertibility of $D\overline G(\theta_*)$ gives local uniqueness
+  (Remark~\ref{cor:local-uniqueness}).
+
+  \item \emph{Existence by topological methods.}
+  Under continuity assumptions, a nonzero Brouwer degree of
+  $\overline G$ on a bounded parameter region guarantees
+  an adaptive equilibrium
+  (Theorem~\ref{thm:degree-existence}).
+  Section~\ref{4.1} gives sufficient conditions based on
+  outward-pointing behavior, comparison with simpler fields,
+  or validated numerical approximations.
+  The outward-pointing condition can be checked using the
+  growth and regularization properties of the loss,
+  without requiring global convexity or global monotonicity.
+
+  \item \emph{Linear response and local exponential stability.}
+  Linear response differentiates the stationary distribution
+  $\mu_\theta$ and yields a formula for $D\overline G(\theta)$
+  that separates the direct effect of changing the controller
+  from the contribution of the changing physical statistics.
+  This derivative also determines the slow part of the
+  linearized adaptive dynamics
+  (Proposition~\ref{prop:effective-jacobian-identification}).
+  Under suitable differentiability and a spectral gap for the
+  frozen physical operator, positivity of the real parts of all
+  eigenvalues of $\Gammahat D\overline G(\theta_*)$ implies
+  local exponential convergence of both the physical
+  distribution and the controller parameters for every
+  sufficiently small positive learning rate $\delta$
+  (Theorem~\ref{thm:local-stability} and
+  Remark~\ref{cor:LR-stability}).
+  The slow relaxation time is of order $\delta^{-1}$.
+
+  \item \emph{A concrete example and numerical experiments.}
+  For a reflected noisy cubic (Duffing-type) control system 
+  with a residual compensator whose readout weights are adapted
+  while its features remain fixed, we verify the mixing and 
+  differentiability assumptions and obtain explicit conditions 
+  for existence, uniqueness in a parameter region, and local 
+  exponential stability (Section~\ref{sec:duffing-example}).
+  The experiments in Section~\ref{sec:empirical-validation}
+  compare the predicted regularization-induced equilibrium
+  shift and relaxation rates with numerical results, and
+  isolate the statistical contribution to adaptive stability.
+  Further experiments explore weak excitation, deployment
+  mismatch, larger learning rates, and adaptation of internal
+  neural-network weights beyond the explicitly verified setting.
+
+\end{enumerate}
+
+The theoretical results concern autonomous dynamics driven by
+gradients averaged over the current physical distribution.
+Finite-sample updates, additional learning variables,
+time-dependent references, and active safety constraints
+require further analysis or extensions of the model.
+The barycentric selector is a modeling choice; substantial
+parameter symmetries may motivate a formulation on a policy
+or quotient space.
+
+
+
+\paragraph{Relation with the literature and novelty.}
+The STO formulation places autonomous adaptive control within the well-developed theory  of the  statistical properties of nonlinear dynamical systems.  The extended operator represents a physical ensemble coupled to a single shared controller: its one-step collapse onto monokinetic measures preserves exactly the measure-parameter dynamics. The existence and pair-space stability arguments can therefore be formulated directly for that dynamics. The contribution lies in connecting this formulation to stationary self-consistency, topological degree, and linear response,
+and in obtaining verifiable criteria linking adaptive equilibria to
+their local attraction. 
+
+The reduction of stationary self-consistency to a
+finite-dimensional equation has precedents in the study
+of mean-field coupled systems.
+\cite{APK} study collective behavior
+through a self-consistent nonlinear Frobenius-Perron equation.
+A particularly explicit stationary reduction appears in \cite{BKZ}, where a scalar
+self-consistency equation selects invariant densities and
+enters the analysis of stability and bistability.
+ \cite{GNT} use a finite-dimensional
+reduction for validated numerical computation and
+computer-assisted proofs of stationary measures in
+mean-field coupled systems.
+Here, the reduced variable is the controller parameter,
+and the consistency condition expresses stationarity of
+its learning rule under the physical distribution generated
+by that controller.
+
+
+Our stability analysis builds on the operator and spectral viewpoint
+developed in
+\cite{GalatoloCMP,CastorriniGalatoloTanziJNS,BL}.
+For general STOs, differentiability may require distinct strong and
+weak spaces, complicating the use of the differential to study
+stability. Cone-contraction methods provide another approach, including
+in some strong-coupling regimes
+\cite{CastorriniGalatoloTanziCones2026}.
+
+In our setting, the finite-dimensional controller parameter provides
+a natural coordinate for the reduced stationary problem.
+Under differentiability of the measure-parameter dynamics and a
+spectral gap for the frozen physical operator, linear response turns
+the derivative of this reduced equation into a computable criterion
+for local stability at sufficiently small positive learning rates.
+This allows us to study adaptive stability without differentiating
+the ambient STO directly, while retaining the transient evolution
+of the physical distribution.
+
+
+
+%Our stability analysis builds on the operator 
+%viewpoint developed for self-consistent transfer operators
+%in \cite{GalatoloCMP,CastorriniGalatoloTanziJNS,BL}.
+%A significant difficulty in this theory is that the
+%nonlinear operator need not be Fr\'echet differentiable
+%as a self-map of the Banach space on which stability is
+%studied; differentiability may instead require distinct
+%strong and weak topologies
+%\cite{CastorriniGalatoloTanziJNS,BL}.
+%
+%The reduced equation formulation allows us to avoid
+%differentiating the ambient STO directly.
+%Under our differentiability assumptions on the
+%measure-parameter dynamics and a spectral gap for the
+%frozen physical operator, the remaining 
+%stability condition reduces to a finite-dimensional
+%spectral problem instead of an infinite dimensional one.
+%Thus the reduced self-consistency equation provides both
+%a characterization of adaptive equilibria and a
+%finite-dimensional criterion for their local stability;
+%see Proposition~\ref{prop:effective-jacobian-identification}.
+
+As discussed above, the problem considered here shares
+with performative learning and feedback-based optimization
+a feedback mechanism through which learning influences
+the system generating its data.
+These connections deserve further investigation.
+Our formulation places this adaptive-control problem
+within the developed theory of statistical properties
+of dynamical systems, making its tools available for
+the analysis of the coupled evolution.
+In particular, transfer operators describe the physical
+statistics, while linear response quantifies how changes
+in the controller affect the stationary distribution
+and thereby contribute to adaptive stability.
+
+
+
+{\noindent \bf Plan of the paper.}
+The paper is organized as follows.
+Section \ref{2} constructs the extended self-consistent transfer
+operator and its reduction to the physical distribution--controller
+dynamics.
+Section \ref{3} characterizes adaptive equilibria and introduces an
+invariance-residual interpretation of Action Error.
+Section \ref{4} reduces the stationary problem to the field
+\(\overline G\) and establishes existence and uniqueness criteria.
+Section \ref{5} proves local exponential stability for sufficiently
+small learning rates, while Section \ref{LR} uses linear response
+to connect the reduced equilibrium equation with the
+linearized adaptive dynamics.
+Section \ref{sec:duffing-example} develops the reflected noisy Duffing-type example,
+Section \ref{sec:empirical-validation} presents numerical experiments, and Section \ref{9}
+discusses the conclusions and further directions.
+
+
+\section{Autonomous adaptive control and the extended STO}
+\label{2}
+
+%{\color{blue}[explain more in details that a STO is from a family of transfer operators usually asked to have some regularity]} {\color{black} Expanded the intro of STO to emphasize the family of operators and regularity conditions.}
+
+A self-consistent transfer operator (STO) is constructed from a family of linear Markov operators whose transition mechanisms depend on the state distribution itself. Specifically, an STO is a nonlinear Markov operator of the form
+\begin{equation}
+  \STO_\delta(\rho):=\Lin_{\delta,\rho}\rho,
+  \label{eq:abstract-sto}
+\end{equation}
+where, for fixed \(\rho\), the frozen operator \(\Lin_{\delta,\rho}\) is
+linear and Markov. This formulation typically requires the mapping \(\rho \mapsto \Lin_{\delta,\rho}\) to possess sufficient regularity, such as continuity or Lipschitz bounds, to ensure the stability of the resulting nonlinear dynamics (see \cite{GalatoloCMP}). Its nonlinearity comes from the dependence of the frozen
+operator on the measure that determines it.  We now construct an extended STO
+for autonomous adaptive control.  The extension is chosen so that an arbitrary
+probability measure on the state--parameter space represents one physical
+state distribution together with one current controller parameter, extracted
+from the parameter marginal.  Consequently, after one application of the STO
+the state is monokinetic in the parameter coordinate.
+
+\subsection{Physical dynamics and learning rule}
+
+
+
+Let $X$ be the physical state space, a Polish space equipped with its Borel
+$\sigma$-algebra, and let $\ThetaSet\subset\mathbb R^p$
+be the set of neural-network parameters, we suppose this is nonempty closed convex parameter set.
+  For a fixed
+\(\theta\in\ThetaSet\), let
+\begin{equation}
+  K_\theta(x,\dd y)
+  \label{eq:kernel}
+\end{equation}
+be the Markov transition kernel of the controlled plant.  Its transfer operator
+is
+\begin{equation}
+  (P_\theta\mu)(A)
+  :=\int_X K_\theta(x,A)\,\dd\mu(x).
+  \label{eq:plant-transfer}
+\end{equation}
+In the deterministic case,
+\[
+  x_{n+1}=F_{\theta}(x_n)
+  =F\bigl(x_n,g(x_n,\theta)\bigr),
+\]
+and \(P_\theta=(F_\theta)_\#\).
+Here $g(x,\theta)$ is the control input produced by the
+neural controller, and $F(x,u)$ describes the physical
+state update under input $u$.
+
+Let \(\ell(x,\theta)\) be the instantaneous loss.  For the algebraic
+construction we assume, for simplicity, that
+\(x\mapsto\nabla_\theta\ell(x,\theta)\) is bounded and measurable for each
+\(\theta\), so that the following integral is defined for every
+\(\mu\in\Prob(X)\).  The same construction works on any forward-invariant
+class of physical probabilities on which the integral is finite.  The
+distributional or infinite-batch gradient is
+\begin{equation}
+  G(\mu,\theta)
+  :=\int_X \nabla_\theta\ell(x,\theta)\,\dd\mu(x).
+  \label{eq:mean-gradient}
+\end{equation}
+This is the deterministic mean-field counterpart of the single-sample SGD
+update used in the numerical implementation of \cite{LippiActionError}.
+
+We factor the learning-rate matrix as
+\begin{equation}
+  \Gamma=\delta\Gammahat,
+  \qquad \delta\geq0,
+  \label{eq:learning-rate}
+\end{equation}
+where \(\delta\) is the scalar learning-rate scale and \(\Gammahat\) is fixed.
+The autonomous measure--parameter dynamics is
+\begin{equation}
+  \boxed{
+  \begin{aligned}
+    \mu_{n+1}&=P_{\theta_n}\mu_n,\\
+    \theta_{n+1}&=\theta_n-\delta\Gammahat
+                    G(\mu_n,\theta_n).
+  \end{aligned}}
+  \label{eq:coupled-system}
+\end{equation}
+Equation \eqref{eq:coupled-system} is the autonomous version of the two-time-scale mechanism in \cite{LippiActionError}: the physical distribution evolves
+under the current controller and the controller parameters evolve according to
+the gradient generated by the current distribution.
+
+\subsection{Extended state space and the single-controller reduction}
+%{\color{blue}[say that now we formalize the dynamics coming from Equation \eqref{eq:coupled-system} as a self consistent transfer operator of the kind intoduced before. By the use of a special class of Monokinetic measures]} {\color{black} Added introductory sentence framing the coupled system as an STO using monokinetic measures.}
+
+We now formalize the coupled dynamics of Equation~\eqref{eq:coupled-system} as a self-consistent transfer operator of the kind introduced above. To achieve this without introducing artificial macroscopic states representing arbitrary ensembles of controllers, we represent the pair dynamics using a special class of monokinetic measures.
+
+Set
+\begin{equation}
+  \Z:=X\times\ThetaSet.
+  \label{eq:extended-space}
+\end{equation}
+A pair \((\mu,\theta)\in\Prob(X)\times\ThetaSet\) is represented by
+\begin{equation}
+  \iota(\mu,\theta)
+  :=\mu\otimes\delta_\theta
+  \in\ProbThetaOne(\Z),
+  \label{eq:embedding}
+\end{equation}
+where \(\ProbThetaOne(\Z)\) is the ambient domain of probability measures defined in Equation~\eqref{eq:ambient-domain} below.
+
+%{\color{blue}[notazione definita subito dopo]} {\color{black} Added a forward reference to where the notation is defined.}
+
+We call
+\begin{equation}
+  \Mmono
+  :=\{\mu\otimes\delta_\theta:
+       \mu\in\Prob(X),\ \theta\in\ThetaSet\}
+  \subset\ProbThetaOne(\Z)
+  \label{eq:monokinetic-set}
+\end{equation}
+the monokinetic set.  The terminology emphasizes that, at a given iteration,
+all the physical mass carries the same controller parameter vector \(\theta\).
+
+The physical adaptive-control system has one controller parameter at each
+iteration.  Therefore, when extending the dynamics from \(\Mmono\) to an
+ambient space of probability measures on \(\Z\), we associate an arbitrary
+extended measure with a single effective parameter.  We assume that \(\ThetaSet\subset\R^p\) is closed and convex.  The natural
+ambient domain is
+\begin{equation}
+  \ProbThetaOne(\Z)
+  :=\left\{\rho\in\Prob(\Z):
+       \int_{\Z}\norm{\vartheta}\,\dd\rho(x,\vartheta)<\infty\right\}.
+  \label{eq:ambient-domain}
+\end{equation}
+If \(\ThetaSet\) is bounded this is simply \(\Prob(\Z)\).  Denote the two marginals
+of \(\rho\in\ProbThetaOne(\Z)\) by
+\begin{equation}
+  \mu_\rho:=(\pi_X)_\#\rho,
+  \qquad
+  m_\rho:=(\pi_\Theta)_\#\rho.
+  \label{eq:extended-marginals}
+\end{equation}
+Because \(\ThetaSet\) is closed and convex, the barycenter of every measure in
+\eqref{eq:ambient-domain} belongs to \(\ThetaSet\).  Define the barycentric controller
+\begin{equation}
+  \bar\theta_\rho
+  :=\int_{\ThetaSet}\vartheta\,\dd m_\rho(\vartheta)
+  =\int_{\Z}\vartheta\,\dd\rho(x,\vartheta)
+  \in\ThetaSet.
+  \label{eq:barycentric-controller}
+\end{equation}
+The associated single-controller reduction map is
+\begin{equation}
+  \mathcal R(\rho):=(\mu_\rho,\bar\theta_\rho).
+  \label{eq:single-controller-retraction}
+\end{equation}
+By construction,
+\begin{equation}
+  \boxed{\mathcal R\circ\iota=\Id_{\Prob(X)\times\ThetaSet}.}
+  \label{eq:retraction-identity}
+\end{equation}
+Thus the reduction map is a left inverse of the monokinetic embedding.  In the
+set-theoretic sense, the associated retraction onto the monokinetic subset is
+\begin{equation}
+  \Pi_{\mathrm{mono}}:=\iota\circ\mathcal R:
+  \ProbThetaOne(\Z)\longrightarrow\Mmono,
+  \qquad
+  \Pi_{\mathrm{mono}}|_{\Mmono}=\Id_{\Mmono},
+  \qquad \Pi_{\mathrm{mono}}^2=\Pi_{\mathrm{mono}}.
+  \label{eq:monokinetic-retraction}
+\end{equation}
+No continuity of \(\Pi_{\mathrm{mono}}\) is asserted until a topology on the
+ambient measure space is specified.
+
+\begin{remark}[Choice of the single-controller selector]
+The barycenter is a convenient choice, but the algebraic
+construction only requires a selector satisfying
+$S(\delta_\theta)=\theta$.
+All such selectors induce the same dynamics on monokinetic
+states, whereas ambient stability additionally requires
+appropriate continuity or Lipschitz bounds.
+We use the barycentric selector throughout.
+\end{remark}
+
+\subsection{Frozen and self-consistent transfer operators}\label{2.3}
+
+Fix \(\rho\in\ProbThetaOne(\Z)\).  The measure \(\rho\) determines the current
+physical distribution \(\mu_\rho\) and the current single controller
+\(\bar\theta_\rho\).  Define the updated controller
+\begin{equation}
+  \theta^+_{\delta,\rho}
+  :=\bar\theta_\rho
+    -\delta\Gammahat G(\mu_\rho,\bar\theta_\rho).
+  \label{eq:barycentric-update}
+\end{equation}
+Throughout the paper we assume that this update remains in \(\ThetaSet\). This condition is automatic when $\ThetaSet=\mathbb R^p$.
+Projected updates can also be considered, but active projection constraints
+change the fixed-point and differentiability formulas and are not covered by
+the results below.
+
+The frozen Markov kernel is
+\begin{equation}
+  \boxed{
+  \mathsf K_{\delta,\rho}
+  \bigl((x,\vartheta),\dd y\,\dd\eta\bigr)
+  :=K_{\bar\theta_\rho}(x,\dd y)\,
+    \delta_{\theta^+_{\delta,\rho}}(\dd\eta).}
+  \label{eq:extended-kernel}
+\end{equation}
+
+
+The kernel is independent of the incoming parameter coordinate:
+all physical states evolve under the selected controller
+$\bar\theta_\rho$ and receive the same updated parameter
+$\theta_{\delta,\rho}^{+}$.
+
+
+
+
+
+The kernel \eqref{eq:extended-kernel} induces the frozen linear Markov operator
+\begin{equation}
+  \bigl(\Lin_{\delta,\rho}\nu\bigr)(E)
+  :=\int_{\Z}
+       \mathsf K_{\delta,\rho}(z,E)\,\dd\nu(z),
+  \qquad
+  E\in\mathcal B(\Z),\quad \nu\in\SM(\Z).
+  \label{eq:frozen-extended-operator}
+\end{equation}
+
+
+
+
+For fixed $\rho$, this operator is linear, preserves positivity
+and total mass, and acts on a probability measure $\nu$ with
+physical marginal $\mu_\nu=(\pi_X)_\#\nu$ as
+
+
+If
+\(\mu_\nu=(\pi_X)_\#\nu\), then for every probability measure \(\nu\)
+\begin{equation}
+  \boxed{
+  \Lin_{\delta,\rho}\nu
+  =P_{\bar\theta_\rho}\mu_\nu
+   \otimes\delta_{\theta^+_{\delta,\rho}}.}
+  \label{eq:frozen-explicit-action}
+\end{equation}
+
+
+
+Its parameter marginal is the Dirac mass at
+$\theta_{\delta,\rho}^{+}$, so the output has finite first
+parameter moment and belongs to $\ProbThetaOne(\Z)$.
+
+
+The self-consistency condition consists in transporting the same measure that
+determines the frozen operator:
+\begin{equation}
+  \boxed{
+  \STO_\delta(\rho)
+  :=\Lin_{\delta,\rho}\rho
+  =P_{\bar\theta_\rho}\mu_\rho
+   \otimes
+   \delta_{\bar\theta_\rho-
+   \delta\Gammahat G(\mu_\rho,\bar\theta_\rho)}.}
+  \label{eq:extended-sto}
+\end{equation}
+Thus \(\STO_\delta\) has the abstract self-consistent form
+\eqref{eq:abstract-sto}, although the ambient extension is deliberately chosen
+to collapse the parameter marginal to a single controller after one step.
+
+Define the pair map
+\begin{equation}
+  \Phi_\delta(\mu,\theta)
+  :=\bigl(P_\theta\mu,
+          \theta-\delta\Gammahat G(\mu,\theta)\bigr).
+  \label{eq:pair-map}
+\end{equation}
+The preceding construction can then be summarized by the factorization
+\begin{equation}
+  \boxed{
+  \STO_\delta
+  =\iota\circ\Phi_\delta\circ\mathcal R.}
+  \label{eq:sto-factorization}
+\end{equation}
+
+\begin{proposition}[One-step monokinetic reduction]
+\label{prop:one-step-monokinetic}
+For every \(\delta\geq0\),
+\begin{equation}
+  \boxed{
+  \STO_\delta\bigl(\ProbThetaOne(\Z)\bigr)\subseteq\Mmono.}
+  \label{eq:one-step-monokinetic}
+\end{equation}
+In particular, every invariant probability measure of \(\STO_\delta\) is
+monokinetic.  On \(\Mmono\), the STO reproduces the original adaptive dynamics:
+\begin{equation}
+  \STO_\delta(\mu\otimes\delta_\theta)
+  =P_\theta\mu\otimes
+   \delta_{\theta-\delta\Gammahat G(\mu,\theta)}.
+  \label{eq:monokinetic-action}
+\end{equation}
+\end{proposition}
+
+%\begin{proof}
+%Equation \eqref{eq:extended-sto} is a product of a probability measure on
+%\(X\) and a Dirac mass in the parameter coordinate, proving
+%\eqref{eq:one-step-monokinetic}.  Hence any fixed point belongs to
+%\(\Mmono\).  If \(\rho=\mu\otimes\delta_\theta\), then
+%\(\mu_\rho=\mu\) and \(\bar\theta_\rho=\theta\), so
+%\eqref{eq:monokinetic-action} follows directly from
+%\eqref{eq:extended-sto}.
+%\end{proof}
+
+Combining \eqref{eq:retraction-identity} and \eqref{eq:sto-factorization}
+gives the exact conjugacy on the monokinetic set,
+\begin{equation}
+  \boxed{
+  \STO_\delta\circ\iota
+  =\iota\circ\Phi_\delta,}
+  \label{eq:conjugacy}
+\end{equation}
+and, more generally, for every \(n\geq1\),
+\begin{equation}
+  \boxed{
+  \STO_\delta^n
+  =\iota\circ\Phi_\delta^n\circ\mathcal R.}
+  \label{eq:iterate-factorization}
+\end{equation}
+
+%{\color{blue}[now this is obvious and the proff can be removed]} {\color{black} removed the proof of the proposition above.}
+
+
+\section{Adaptive equilibria and Action Error}\label{3}
+
+The one-step reduction \eqref{eq:one-step-monokinetic} makes the stationary
+problem particularly rigid.  Although the self-consistent operator is defined
+on the full space \(\ProbThetaOne(\Z)\), any invariant probability measure must already
+belong to the monokinetic set \(\Mmono\).  Thus there is no distinction between
+``ambient'' invariant measures and invariant states carrying a single
+controller parameter.
+
+\begin{definition}[Adaptive equilibrium]
+A probability measure \(\rho_*\in\ProbThetaOne(\Z)\) is an adaptive equilibrium if
+\[
+  \STO_\delta(\rho_*)=\rho_*.
+\]
+By Proposition~\ref{prop:one-step-monokinetic}, every adaptive equilibrium is
+necessarily of the form
+\(\rho_*=\mu_*\otimes\delta_{\theta_*}\).
+\end{definition}
+
+\begin{proposition}[Fixed-point characterization of all invariant probabilities]
+\label{prop:all-fixed-points}
+Assume \(\delta>0\) and that \(\Gammahat\) is injective.  A probability measure
+\(\rho_*\in\ProbThetaOne(\Z)\) is invariant for \(\STO_\delta\) if and only if there
+exist \(\mu_*\in\Prob(X)\) and \(\theta_*\in\ThetaSet\) such that
+\begin{equation}
+  \rho_*=\mu_*\otimes\delta_{\theta_*}
+  \qquad\text{and}\qquad
+  \boxed{
+  P_{\theta_*}\mu_*=\mu_* ,
+  \qquad
+  G(\mu_*,\theta_*)=0.}
+  \label{eq:adaptive-equilibrium}
+\end{equation}
+In particular, the barycentric extension creates no non-monokinetic invariant
+probability measures.
+\end{proposition}
+
+\begin{proof}
+Suppose first that \(\rho_*\) is invariant.  Since
+\(\STO_\delta(\ProbThetaOne(\Z))\subseteq\Mmono\), invariance implies
+\(\rho_*\in\Mmono\), and therefore
+\[
+  \rho_*=\mu_*\otimes\delta_{\theta_*}
+\]
+for some \((\mu_*,\theta_*)\).  On the monokinetic set the operator agrees
+exactly with the original measure--parameter dynamics, so
+\eqref{eq:monokinetic-action} gives
+\[
+  \STO_\delta(\rho_*)
+  =P_{\theta_*}\mu_*\otimes
+   \delta_{\theta_*-\delta\Gammahat G(\mu_*,\theta_*)}.
+\]
+Equality with \(\rho_*\) implies equality of the physical and parameter
+marginals.  Hence
+\[
+  P_{\theta_*}\mu_*=\mu_*,
+  \qquad
+  \delta\Gammahat G(\mu_*,\theta_*)=0.
+\]
+Since \(\delta>0\) and \(\Gammahat\) is injective, the second equality is
+ equivalent to \(G(\mu_*,\theta_*)=0\).
+
+Conversely, if \eqref{eq:adaptive-equilibrium} holds, then
+\eqref{eq:monokinetic-action} immediately yields
+\(\STO_\delta(\rho_*)=\rho_*\).
+\end{proof}
+
+
+%{\color{blue} [shorthen this part which is now qite reduntand?]} {\color{black} Condensed paragraphs focusing on multiplicity and interpretation.}
+
+The two conditions in \eqref{eq:adaptive-equilibrium} represent physical stationarity of the plant and parameter stationarity of the learning rule, respectively. By Proposition~\ref{prop:all-fixed-points}, the ambient extension introduces no artificial equilibria: multiple invariant measures can arise only from non-uniqueness in the physical invariant measure or the learning root.
+This is particularly natural for neural parameterizations, where symmetries and
+redundant parameter directions generally preclude global parameter uniqueness.
+
+\begin{corollary}[Zero-learning-rate equilibria]
+\label{cor:zero-rate-fixed-points}
+At \(\delta=0\), a probability measure \(\rho_*\in\ProbThetaOne(\Z)\) is invariant for
+\(\STO_0\) if and only if
+\begin{equation}
+  \rho_*=\mu_*\otimes\delta_{\theta_*},
+  \qquad
+  P_{\theta_*}\mu_*=\mu_*.
+  \label{eq:zero-rate-fixed-points}
+\end{equation}
+Thus the learning condition disappears at zero rate and the controller
+parameter remains a neutral coordinate.
+\end{corollary}
+
+\begin{proof}
+
+For $\rho_*=\mu_*\otimes\delta_{\theta_*}$, the formula \ref{eq:monokinetic-action}
+for the action of the STO on monokinetic measures, evaluated
+at $\delta=0$, gives
+\[
+  \STO_0(\rho_*)
+  =P_{\theta_*}\mu_*\otimes\delta_{\theta_*},
+\]
+which equals \(\rho_*\) exactly when
+\(P_{\theta_*}\mu_*=\mu_*\).
+\end{proof}
+
+\subsection{Action Error as failure of invariance}
+\label{sec:action-error}
+
+Let \((\mu_{\mathrm{off}},\theta_{\mathrm{off}})\) denote the distribution and
+controller parameter produced by offline training, and set
+\[
+  \rho_{\mathrm{off}}
+  :=\mu_{\mathrm{off}}\otimes\delta_{\theta_{\mathrm{off}}}.
+\]
+An offline stationarity condition may give
+\begin{equation}
+  G(\mu_{\mathrm{off}},\theta_{\mathrm{off}})=0,
+  \label{eq:offline-learning-stationarity}
+\end{equation}
+but this does not imply
+\(P_{\theta_{\mathrm{off}}}\mu_{\mathrm{off}}=\mu_{\mathrm{off}}\).
+
+A natural operator-level diagnostic of the deployment-induced mismatch in
+\cite{LippiActionError} is therefore the physical invariance residual, which we formalize as the \emph{Action Error}:
+%{\color{blue}Can we define  it again as action error?} {\color{black} Explicitly defined the residual as the Action Error.}
+
+\begin{equation}
+  \mathfrak R_A
+  :=P_{\theta_{\mathrm{off}}}\mu_{\mathrm{off}}
+    -\mu_{\mathrm{off}}.
+  \label{eq:action-residual}
+\end{equation}
+
+%In the extended formulation the complete fixed-point defect is
+%\begin{equation}
+%  \mathfrak R_{\mathrm{ext}}
+  %:=\STO_\delta(\rho_{\mathrm{off}})-\rho_{\mathrm{off}}.
+  %\label{eq:extended-action-residual}
+%\end{equation}
+%Using \eqref{eq:monokinetic-action}, this is explicitly
+%\begin{equation}
+ % \mathfrak R_{\mathrm{ext}}
+  %=P_{\theta_{\mathrm{off}}}\mu_{\mathrm{off}}
+   %  \otimes
+    % %\delta_{\theta_{\mathrm{off}}
+     %  -\delta\Gammahat %G(\mu_{\mathrm{off}},\theta_{\mathrm{off}})}
+   %-\mu_{\mathrm{off}}\otimes\delta_{\theta_{\mathrm{off}}}.
+  %\label{eq:extended-action-residual-explicit}
+%\end{equation}
+%Under the offline learning-stationarity condition
+%\eqref{eq:offline-learning-stationarity}, the parameter component does not move
+%at the first adaptive step and the defect reduces exactly to
+%\begin{equation}
+%  \boxed{
+%  \mathfrak R_{\mathrm{ext}}
+%  =\mathfrak R_A\otimes\delta_{\theta_{\mathrm{off}}}.}
+%  \label{eq:action-residual-lift}
+%\end{equation}
+%Thus a controller can be stationary for the offline learning problem and still
+%fail to define an adaptive equilibrium because deployment changes the invariant
+%state distribution.  Proposition~\ref{prop:all-fixed-points} shows that both
+%physical invariance and learning stationarity are necessary, and jointly
+%sufficient, for equilibrium of the autonomous closed-loop system.
+%
+%{\color{blue}Shorten this?}
+%Thus, an offline-stationary controller fails to be an adaptive equilibrium if deployment alters the invariant state distribution, underscoring that both physical and learning stationarity are necessary (Proposition~\ref{prop:all-fixed-points}).
+
+%{\color{blue}Shorten this?} {\color{black} Shortened the paragraph to summarize the necessity of both stationarity conditions.}
+
+\section{Reduced stationary problem: existence and uniqueness}
+\label{4}
+In this section we establish existence and uniqueness results for the equilibrium state of our system.
+%The one-step reduction established in Proposition~\ref{prop:one-step-monokinetic}
+%turns the stationary problem for the extended STO into a finite-dimensional
+%selection problem once the invariant statistics of each frozen controller are
+%known.  No separate analysis of non-monokinetic fixed points is required: by
+%Proposition~\ref{prop:all-fixed-points}, every invariant probability measure of
+%\(\STO_\delta\) is already represented by a single controller parameter.
+
+Let
+\[
+  B_s(X)\hookrightarrow B_w(X)\subseteq\SM(X)
+\]
+be Banach spaces with continuous embedding and continuous total-mass
+functional, and let
+\(\mathcal U\subseteq\operatorname{int}(\ThetaSet)\) be open.
+
+\begin{assumption}[Unique invariant physical branch]
+\label{ass:physical-branch}
+For every \(\theta\in\mathcal U\), the Markov operator \(P_\theta:B_s(X) \to B_s(X) \) has a
+unique invariant probability measure in \(B_s(X)\),  
+denoted
+\(\mu_\theta\). 
+\end{assumption}
+
+Define the reduced learning field
+\begin{equation}
+  \overline G(\theta):=G(\mu_\theta,\theta),
+  \qquad \theta\in\mathcal U.
+  \label{eq:effective-gradient}
+\end{equation}
+
+ Next statement gives a characterization of the equilibrium states of the system as fixed  points of the dynamics induced by the reduced learning field. We remark that once the field is computed, this is a finite dimensional condition.
+
+\begin{theorem}[Reduced zeros and invariant probabilities]
+\label{thm:equilibrium-correspondence}
+Assume \(\delta>0\), that \(\Gammahat\) is injective, and
+Assumption~\ref{ass:physical-branch}.  Then
+\begin{equation}
+  \theta\longmapsto\mu_\theta\otimes\delta_\theta
+  \label{eq:equilibrium-correspondence-map}
+\end{equation}
+defines a bijection between
+\[
+  \{\theta\in\mathcal U:\overline G(\theta)=0\}
+\]
+and the invariant probability measures of \(\STO_\delta\) whose physical marginals belong to \(B_s(X)\) and whose controller
+parameter belongs to \(\mathcal U\).
+\end{theorem}
+
+\begin{proof}
+If \(\overline G(\theta)=0\), then
+\[
+  P_\theta\mu_\theta=\mu_\theta,
+  \qquad
+  G(\mu_\theta,\theta)=0,
+\]
+so Proposition~\ref{prop:all-fixed-points} gives the invariant probability
+measure \(\mu_\theta\otimes\delta_\theta\).
+
+Conversely, let $\rho$ be an invariant probability measure
+whose physical marginal belongs to $B_s(X)$ and whose
+controller parameter belongs to $U$.
+  Proposition~\ref{prop:all-fixed-points}
+implies that
+\[
+  \rho=\mu\otimes\delta_\theta,
+  \qquad
+  P_\theta\mu=\mu,
+  \qquad
+  G(\mu,\theta)=0.
+\]
+Uniqueness of the frozen physical invariant measure gives
+\(\mu=\mu_\theta\), and therefore \(\overline G(\theta)=0\).  Distinct
+parameter values give distinct Dirac parameter marginals, proving injectivity.
+\end{proof}
+
+Thus, within \(\mathcal U\), existence and uniqueness of invariant probability
+measures are exactly equivalent to the reduced zero set being nonempty or a
+singleton.  In particular, the ambient extension introduces no additional
+stationary branches.
+
+\begin{corollary}[Uniqueness from the reduced field]
+\label{cor:reduced-global-uniqueness}
+Assume the hypotheses of Theorem~\ref{thm:equilibrium-correspondence}.  If
+\(\overline G\) has exactly one zero \(\theta_*\) in \(\mathcal U\), then $\rho_*:=\mu_{\theta_*}\otimes\delta_{\theta_*}$
+is the unique invariant probability measure of $\STO_\delta$
+whose physical marginal belongs to $B_s(X)$ and whose
+controller parameter lies in $U$.
+\end{corollary}
+
+\begin{proof}
+This is immediate from the bijection in
+Theorem~\ref{thm:equilibrium-correspondence}.
+\end{proof}
+
+We now establish an existence result for equilibrium states of the system, based on topological argument. For this we need to assume a kind of stability for the invariant measure associated to a control parameter.
+
+\begin{assumption}
+\label{ass:stationary-continuity}
+The maps
+\[
+  \mathcal U\ni\theta\longmapsto\mu_\theta\in B_w(X),
+  \qquad
+  G:B_w(X)\times\mathcal U\longrightarrow\R^p
+\]
+are continuous with respect to the norm topology of \(B_w(X)\) and the standard Euclidean topology on \(\mathcal{U}\) and \(\R^p\). 
+%{\color{blue} precisare in che senso} {\color{black} Explicitly named the topologies.}
+\end{assumption}
+
+Under Assumption~\ref{ass:stationary-continuity}, the reduced learning field
+\(\overline G:\mathcal U\to\R^p\) is automatically continuous by composition, reflecting the assumed regularity of the underlying loss function gradient. %{\color{blue} dipende dalla regolarità della loss function?} {\color{black} Clarified that it follows from the composition involving the loss gradient.}
+
+\begin{theorem}[Brouwer-degree existence]
+\label{thm:degree-existence}
+Assume the hypotheses of Theorem~\ref{thm:equilibrium-correspondence} and
+Assumption~\ref{ass:stationary-continuity}.  Let
+\(\Omega\subset\R^p\) be bounded and open, with
+\(\overline\Omega\subset\mathcal U\), and suppose
+\footnote{Here $\deg(\overline G,\Omega,0)$ denotes the Brouwer degree of the
+continuous map $\overline G:\overline\Omega\to\mathbb R^p$ with respect to
+the value $0$, defined when $0\notin\overline G(\partial\Omega)$.  It is an
+integer-valued topological invariant that, roughly speaking, counts the zeros
+of $\overline G$ in $\Omega$ with orientation and multiplicity.  In
+particular, $\deg(\overline G,\Omega,0)\neq0$ implies that there exists at
+least one $\theta_*\in\Omega$ such that $\overline G(\theta_*)=0$.  If all
+zeros are isolated and nondegenerate, then
+$\deg(\overline G,\Omega,0)=
+\sum_{\overline G(\theta_i)=0}\operatorname{sgn}\det
+D\overline G(\theta_i)$.}
+\[
+  0\notin\overline G(\partial\Omega),
+  \qquad
+  \deg(\overline G,\Omega,0)\neq0.
+  \label{eq:nonzero-degree}
+\]
+Then \(\STO_\delta\) has an invariant probability measure
+\[
+  \rho_*=\mu_{\theta_*}\otimes\delta_{\theta_*}
+\]
+with \(\theta_*\in\Omega\).
+\end{theorem}
+
+\begin{proof}
+Because the Brouwer degree $  \deg(\overline G,\Omega,0)\neq0$, there is
+\(\theta_*\in\Omega\) with \(\overline G(\theta_*)=0\).
+Theorem~\ref{thm:equilibrium-correspondence} gives the corresponding invariant
+probability measure.
+\end{proof}
+
+We show a first practical way to verify that the Brouwer degree is not null and apply the existence result.
+
+\begin{corollary}[Outward-pointing criterion]
+\label{cor:outward-pointing-existence}
+
+
+Assume the hypotheses of Theorem~\ref{thm:equilibrium-correspondence}
+and Assumption~\ref{ass:stationary-continuity}.
+Let $\overline{B_R(\theta_0)}\subset U$.
+  If
+\begin{equation}
+  \left\langle\overline G(\theta),\theta-\theta_0\right\rangle>0
+  \qquad
+  \text{for every }\theta\in\partial B_R(\theta_0),
+  \label{eq:outward-pointing-condition}
+\end{equation}
+then \(\STO_\delta\) has an invariant probability measure whose controller
+parameter belongs to \(B_R(\theta_0)\).
+\end{corollary}
+
+\begin{proof}
+For
+\(H_t(\theta)=(1-t)(\theta-\theta_0)+t\overline G(\theta)\),
+condition \eqref{eq:outward-pointing-condition} implies
+\[
+  \left\langle H_t(\theta),\theta-\theta_0\right\rangle>0
+  \qquad
+  (\theta\in\partial B_R(\theta_0),\ 0\leq t\leq1).
+\]
+Hence the homotopy has no boundary zero and
+\[
+  \deg(\overline G,B_R(\theta_0),0)
+  =\deg(\theta\mapsto\theta-\theta_0,B_R(\theta_0),0)=1.
+\]
+\end{proof}
+
+\subsection{Verifying the degree condition}\label{4.1}
+
+The degree condition is natural here because it constrains the reduced field
+only on the boundary of a bounded parameter region.  It allows nonconvexity,
+multiple critical points, and neural-network symmetries in the interior.
+In applications one normally verifies a boundary or homotopy criterion rather
+than computing the degree from its definition. We now outline some different ways to verify that the degree is not null.
+
+\paragraph{Boundary coercivity.}
+A sufficient condition for
+\eqref{eq:outward-pointing-condition} is
+\begin{equation}
+  \left\langle\overline G(\theta),\theta-\theta_0\right\rangle
+  \geq a\norm{\theta-\theta_0}^2-b,
+  \qquad a>0,\quad b\geq0,
+  \label{eq:degree-coercive-bound}
+\end{equation}
+for then every \(R>\sqrt{b/a}\) contained in \(\mathcal U\) has degree one.
+For the unpreconditioned learning rule
+$\widehat\Gamma=\mathrm{Id}$, this means that the stationary
+learning update points inward on the boundary.
+For a general injective preconditioner, the degree criterion
+still establishes existence, since the equilibrium equation
+remains $\overline G(\theta)=0$.
+
+
+
+In practical machine learning applications, this coercivity condition can be  satisfied by applying \(L_2\) regularization (weight decay) \cite{goodfellow2016deep}. 
+The regularization adds an outward contribution proportional to $\theta$
+to the reduced learning field, ensuring the Brouwer degree
+boundary condition whenever this contribution dominates
+the remaining terms on the boundary.
+This mechanism is made explicit in the example of
+Section~\ref{sec:duffing-example}.
+
+
+\paragraph{Homotopy to a nominal model.}
+Let $G_0:\overline\Omega\to\mathbb R^p$ be continuous,
+with $0\notin G_0(\partial\Omega)$ and
+$\deg(G_0,\Omega,0)\ne0$. The boundary estimate
+\begin{equation}
+  \sup_{\theta\in\partial\Omega}
+  \norm{\overline G(\theta)-\overline G_0(\theta)}
+  <
+  \inf_{\theta\in\partial\Omega}\norm{\overline G_0(\theta)}
+  \label{eq:degree-homotopy-bound}
+\end{equation}
+prevents zeros along the straight-line homotopy, and therefore
+\(\deg(\overline G,\Omega,0)=\deg(\overline G_0,\Omega,0)\).  The reference
+field may come from a nominal plant, a simplified controller, or an offline
+model.
+
+\paragraph{Validated approximation.}
+The same argument applies to a numerical field \(\overline G_N\).  If
+\begin{equation}
+  \sup_{\theta\in\partial\Omega}
+  \norm{\overline G(\theta)-\overline G_N(\theta)}
+  <
+  \inf_{\theta\in\partial\Omega}\norm{\overline G_N(\theta)},
+  \label{eq:degree-validated-bound}
+\end{equation}
+then \(\overline G\) and \(\overline G_N\) have the same degree.  Ulam-type
+approximations, continuation in the controller parameters, and interval bounds
+can therefore certify existence when their boundary errors are controlled.
+
+\begin{remark}[Multiplicity and neural symmetries]
+The degree argument gives existence, not generic global uniqueness.  By
+Corollary~\ref{cor:reduced-global-uniqueness}, uniqueness within
+\(\mathcal U\) is equivalent to uniqueness of the relevant zero of
+\(\overline G\) once the physical stationary branch is unique; the statement
+is global when every invariant controller parameter lies in \(\mathcal U\).  
+\end{remark}
+
+
+\section{Local stability and the zero-learning-rate center family}\label{5}
+
+The factorization \eqref{eq:sto-factorization} has an important consequence for
+stability.  In fact
+\eqref{eq:retraction-identity} and \eqref{eq:sto-factorization} imply the exact
+semiconjugacy
+\begin{equation}
+  \boxed{
+  \mathcal R\circ\STO_\delta
+  =\Phi_\delta\circ\mathcal R,}
+  \label{eq:retraction-semiconjugacy}
+\end{equation}
+while \eqref{eq:iterate-factorization} gives
+\(
+\STO_\delta^n=\iota\circ\Phi_\delta^n\circ\mathcal R
+\)
+for every \(n\geq1\).  Thus the  asymptotic stability problem for $\STO_\delta$ is
+equivalent to the stability problem for the pair dynamics \(\Phi_\delta\).
+
+At \(\delta=0\),
+\[
+  \Phi_0(\mu,\theta)=(P_\theta\mu,\theta),
+\]
+so the controller coordinate is neutral.  Whenever
+\(P_\theta\mu_\theta=\mu_\theta\), the pair \((\mu_\theta,\theta)\) and the
+corresponding measure
+\begin{equation}
+  \rho_\theta:=\mu_\theta\otimes\delta_\theta
+  \label{eq:equilibrium-family}
+\end{equation}
+are equilibria.  The zero-learning-rate system therefore possesses a finite-dimensional center family rather than a single isolated equilibrium.
+For positive learning rate, we now develop below a criterion ensuring that a certain fixed point of the STO is attractive and hence also locally unique.
+
+Let \(\rho_*=\mu_*\otimes\delta_{\theta_*}\) be a selected adaptive
+equilibrium, for example one supplied by
+Theorem~\ref{thm:degree-existence}, with \(\mu_*\in B_s(X)\) and
+\(\theta_*\in\operatorname{int}(\ThetaSet)\).  Define
+\begin{equation}
+  V_s(X):=\{\eta\in B_s(X):\eta(X)=0\}.
+  \label{eq:zero-mass-space}
+\end{equation}
+On the pair space we use the local product distance
+\begin{equation}
+  d_{\mathrm{pair},s}
+  \bigl((\mu,\theta),(\mu_*,\theta_*)\bigr)
+  :=\norm{\mu-\mu_*}_s+\norm{\theta-\theta_*}.
+  \label{eq:pair-strong-distance}
+\end{equation}
+This formula also gives the monokinetic set the structure of a metric space.
+
+A compatible ambient metric is obtained on the class of product probability measures
+\[
+  \mathcal A_s
+  :=
+  \left\{
+    \mu\otimes m:
+    \mu\in\mathcal P(X)\cap B_s(X),\
+    m\in\mathcal P_1(\Theta)
+  \right\}
+\]
+by setting
+\[
+  d_{\mathcal A_s}(\mu\otimes m,\nu\otimes n)
+  :=
+  \|\mu-\nu\|_s+W_1(m,n),
+\]
+where $W_1$ is the Wasserstein distance induced by the
+Euclidean norm on $\Theta$.
+\footnote{
+Since
+\[
+  \left\|\int_\Theta\theta\,dm(\theta)
+          -\int_\Theta\theta\,dn(\theta)\right\|
+  \leq W_1(m,n),
+\]
+the reduction map satisfies
+\[
+  d_{\mathrm{pair},s}(R\rho,R\sigma)
+  \leq d_{\mathcal A_s}(\rho,\sigma).
+\]
+Moreover, on monokinetic measures,
+\[
+  d_{\mathcal A_s}
+  (\mu\otimes\delta_\theta,\nu\otimes\delta_\vartheta)
+  =
+  \|\mu-\nu\|_s+\|\theta-\vartheta\|.
+\]
+Thus the reduction map $\mathcal R$ is $1$-Lipschitz
+from $(\mathcal A_s,d_{\mathcal A_s})$ to the pair space,
+while the monokinetic embedding $\iota$ is an isometry.
+These properties allow us to transfer the pair-space
+stability estimate to $\mathcal A_s$ in
+Corollary~\ref{cor:ambient-metric-stability}.}
+
+
+
+%For ambient probability measures whose physical marginals belong to
+%\(B_s(X)\), the reduction map induces the corresponding pseudodistance
+%\begin{equation}
+%  d_{\mathcal R,s}(\rho_1,\rho_2)
+%  :=\norm{\mu_{\rho_1}-\mu_{\rho_2}}_s
+%    +\norm{\bar\theta_{\rho_1}-\bar\theta_{\rho_2}}.
+%  \label{eq:retraction-pseudodistance}
+%\end{equation}
+%It is generally only a pseudodistance on \(\ProbThetaOne(\Z)\), because different
+%joint measures may have the same physical marginal and the same barycentric
+%controller.  This loss of separation is natural here: by construction such
+%measures generate exactly the same future orbit after one application of the
+%STO.
+
+\begin{assumption}[Local differentiability of the adaptive dynamics]
+\label{ass:local-adaptive-C1}
+Equip
+\[
+  V_s(X):=\{\eta\in B_s(X):\eta(X)=0\}
+\]
+with the norm inherited from \(B_s(X)\), and equip
+\[
+  E_s:=V_s(X)\times\R^p
+\]
+with the product norm
+\[
+  \norm{(\eta,v)}_{E_s}
+  :=\norm{\eta}_s+\norm{v},
+\]
+where \(\norm{\cdot}\) is the Euclidean norm on \(\R^p\).
+
+There exist open neighborhoods
+\(\mathcal V\subset V_s(X)\) and
+\(\mathcal W\subset\R^p\) of zero, with
+\(\theta_*+\mathcal W\subseteq\ThetaSet\), such that the maps
+initially defined on physically admissible pairs admit extensions
+\[
+  \mathcal F:\mathcal V\times\mathcal W\longrightarrow V_s(X),
+  \qquad
+  \mathcal F(\eta,v)
+  :=
+  P_{\theta_*+v}(\mu_*+\eta)-\mu_*,
+\]
+and
+\[
+  \mathcal G:\mathcal V\times\mathcal W\longrightarrow\R^p,
+  \qquad
+  \mathcal G(\eta,v)
+  :=
+  G(\mu_*+\eta,\theta_*+v),
+\]
+which are continuously Fr\'echet differentiable with respect to the
+product Banach topology of \(E_s\).  
+The extension $\mathcal F$ is given by the displayed formula
+on all of $V\times W$, using the linear action of
+$P_{\theta_*+v}$ on signed measures. In particular,
+\[
+  D_\eta\mathcal F(0,0)[\eta]=P_{\theta_*}\eta.
+\]
+
+Thus
+\[
+  D\mathcal F(\eta,v)\in
+  \mathcal L(E_s,V_s(X)),
+  \qquad
+  D\mathcal G(\eta,v)\in
+  \mathcal L(E_s,\R^p),
+\]
+and these differentials depend continuously on \((\eta,v)\) in the
+corresponding operator norms.
+\end{assumption}
+
+Under Assumption~\ref{ass:local-adaptive-C1}, the pair map
+\(\Phi_\delta\), expressed in translated coordinates
+\((\eta,v)=(\mu-\mu_*,\theta-\theta_*)\), is continuously Fr\'echet
+differentiable near \((0,0)\).  Its differential at the equilibrium is
+\begin{equation}
+ D\Phi_\delta(\mu_*,\theta_*)
+ \begin{pmatrix}\eta\\ v\end{pmatrix}
+ =
+ \begin{pmatrix}
+   P_*\eta+B_*v\\[1mm]
+   v-\delta\Gammahat\bigl(C_*\eta+H_*v\bigr)
+ \end{pmatrix},
+ \label{eq:block-linearization}
+\end{equation}
+where \(P_*:=P_{\theta_*}\) and
+
+\begin{equation}
+  B_*v:=D_v\mathcal F(0,0)[v]
+  =\left.\frac{d}{dt}\right|_{t=0}
+    P_{\theta_*+tv}\mu_*.
+  \label{eq:Bstar}
+\end{equation}
+
+\begin{align}
+  C_*\eta&:=D_\mu G(\mu_*,\theta_*)[\eta],
+  \label{eq:Cstar}\\
+  H_*v&:=D_\theta G(\mu_*,\theta_*)[v].
+  \label{eq:Hstar}
+\end{align}
+The definition of $B_*$ only requires differentiability
+of $\theta\mapsto P_\theta\mu_*$.
+Under the stronger operator-norm differentiability
+assumption introduced in Section~6, it agrees with
+\[
+  B_*v=(D_\theta P_{\theta_*}[v])\mu_*.
+\]
+
+Equivalently,
+\begin{equation}
+  \mathcal A_\delta
+  :=D\Phi_\delta(\mu_*,\theta_*)
+  =
+  \begin{pmatrix}
+    P_* & B_*\\
+    -\delta\Gammahat C_* &
+    \Id-\delta\Gammahat H_*
+  \end{pmatrix}.
+  \label{eq:block-matrix}
+\end{equation}
+
+The upper-right block measures the first-order effect of a controller
+perturbation on the physical distribution, whereas the lower-left block is the
+feedback from the physical distribution to the learning update.
+
+Assume that the physical dynamics has a spectral gap on the zero-mass space: \footnote{Spectral gaps provide a standard mechanism for exponential
+relaxation in mixing hyperbolic dynamics and in stochastic
+systems. Their realization depends on the functional
+setting: hyperbolic systems often require anisotropic spaces of distributions, whereas a uniform Doeblin condition gives contraction on zero-mass measures in total variation. The latter fits the present framework
+directly and is verified in
+Section~\ref{sec:duffing-example}.}
+\begin{equation}
+  r\bigl(P_*|_{V_s(X)}\bigr)<1.
+  \label{eq:fast-spectral-gap}
+\end{equation}
+Then
+\[
+  R_*:=(\Id-P_*)^{-1}:V_s(X)\to V_s(X)
+\]
+is bounded.  Define the effective slow Jacobian
+\begin{equation}
+  \boxed{
+  \mathcal J_*:=H_*+C_*R_*B_*.}
+  \label{eq:effective-slow-jacobian}
+\end{equation}
+The term \(R_*B_*v\) is the stationary first-order physical displacement
+induced by a parameter perturbation \(v\), and \(C_*R_*B_*v\) is the
+corresponding indirect contribution to the learning update. We remark that $\mathcal J_*$ is independent of $\delta$.
+
+
+\begin{theorem}[Local exponential stability of the pair dynamics]
+\label{thm:local-stability}
+Let \(\rho_*\) be as above.  Assume:
+\begin{enumerate}[label=(S\arabic*)]
+  \item Assumption~\ref{ass:local-adaptive-C1} holds;
+  \item the physical spectral-gap condition
+        \eqref{eq:fast-spectral-gap} holds;
+  \item the matrix
+        \begin{equation}
+          M_*:=\Gammahat\mathcal J_*
+          \label{eq:effective-slow-matrix}
+        \end{equation}
+        is positive stable, that is,
+        \(\operatorname{Re}\lambda>0\) for every
+        \(\lambda\in\sigma(M_*)\).
+\end{enumerate}
+Then there exists \(\delta_0>0\) such that, for every
+\(0<\delta<\delta_0\), the equilibrium \((\mu_*,\theta_*)\) is locally
+exponentially stable for \(\Phi_\delta\).  Equivalently, \(\rho_*\) is locally
+exponentially stable for the STO on the invariant monokinetic set.
+More precisely, for each such \(\delta\) there exist a neighborhood
+\(\mathcal N_\delta\) of \((0,0)\) in \(V_s(X)\times\R^p\), a constant
+\(C_\delta\geq1\), and \(q_\delta\in(0,1)\) such that
+\begin{equation}
+  \norm{\mu_n-\mu_*}_s+\norm{\theta_n-\theta_*}
+  \leq C_\delta q_\delta^n
+  \left(
+    \norm{\mu_0-\mu_*}_s+\norm{\theta_0-\theta_*}
+  \right)
+  \label{eq:local-exponential-stability}
+\end{equation}
+whenever \(\mu_0\) is a probability measure and
+\((\mu_0-\mu_*,\theta_0-\theta_*)\in\mathcal N_\delta\).
+
+The linearized operator
+$A_\delta=D\Phi_\delta(\mu_*,\theta_*)$ has exactly $p$
+eigenvalues near $1$, counted with algebraic multiplicity.
+These eigenvalues  $\lambda_j^{\mathrm{slow}}(\delta)$  converge to $1$ as $\delta\to0$ and
+describe the slow adaptive modes associated with the
+controller parameters. More precisely
+
+\begin{equation}
+  \lambda_j^{\mathrm{slow}}(\delta)
+  =1-\delta\lambda_j(M_*)+o(\delta),
+  \qquad j=1,\ldots,p
+  \label{eq:slow-multipliers}
+\end{equation}
+where $\lambda_1(M_*),\ldots,\lambda_p(M_*)$ are the
+eigenvalues of $M_*=\widehat\Gamma\mathcal J_*$,
+counted with algebraic multiplicity.
+Consequently, if
+\(m_*:=\min\{\operatorname{Re}\lambda:\lambda\in\sigma(M_*)\}>0\),
+the slow contraction factor is
+\(1-\delta m_*+o(\delta)\), and the corresponding relaxation time is of
+order \(\delta^{-1}\).
+\end{theorem}
+
+\begin{proof}
+At $\delta=0$,
+\[
+  \mathcal A_0=
+  \begin{pmatrix}
+    P_* & B_*\\
+    0 & \Id
+  \end{pmatrix},
+\]
+where throughout the block calculation $P_*$ acts on
+$V_s(X)$.
+By \emph{(S2)}, $1\notin\sigma(P_*)$, so
+$R_*=(\Id-P_*)^{-1}$ is bounded and
+\[
+  P_*R_*B_*+B_*=R_*B_*.
+\]
+Define the bounded invertible transformation
+\[
+  S(\xi,v):=(\xi+R_*B_*v,v),
+  \qquad
+  S^{-1}(\eta,v)=(\eta-R_*B_*v,v).
+\]
+Then
+\[
+\begin{aligned}
+  \mathcal A_0S(\xi,v)
+  &=\bigl(P_*\xi+P_*R_*B_*v+B_*v,\ v\bigr)\\
+  &=\bigl(P_*\xi+R_*B_*v,\ v\bigr),
+\end{aligned}
+\]
+and hence
+\[
+  S^{-1}\mathcal A_0S(\xi,v)=(P_*\xi,v).
+\]
+Thus
+\[
+  S^{-1}\mathcal A_0S
+  =\operatorname{diag}(P_*,\Id).
+\]
+In particular, the spectral value $1$ is isolated and
+semisimple, with algebraic multiplicity $p$ and eigenspace
+\[
+  E_c=\ker(\mathcal A_0-\Id)
+     =\{(R_*B_*v,v):v\in\R^p\}.
+\]
+
+For positive $\delta$, recalling
+$\mathcal J_*=H_*+C_*R_*B_*$, we obtain
+\[
+  \mathcal A_\delta S(\xi,v)
+  =
+  \begin{pmatrix}
+    P_*\xi+R_*B_*v\\
+    -\delta\Gammahat C_*\xi
+    +(\Id-\delta\Gammahat\mathcal J_*)v
+  \end{pmatrix}.
+\]
+Applying $S^{-1}$ subtracts $R_*B_*$ times the second
+component from the first, giving
+\begin{equation}
+  S^{-1}\mathcal A_\delta S
+  =
+  \begin{pmatrix}
+    P_*+\delta R_*B_*\Gammahat C_*
+      & \delta R_*B_*\Gammahat\mathcal J_*\\[1mm]
+    -\delta\Gammahat C_*
+      & \Id-\delta\Gammahat\mathcal J_*
+  \end{pmatrix}.
+  \label{eq:conjugated-linearization}
+\end{equation}
+
+At $\delta=0$, the eigenspace of
+$S^{-1}\mathcal A_0S=\operatorname{diag}(P_*,\Id)$
+associated with the eigenvalue $1$ is
+$E_0:=\{0\}\times\R^p$, with spectral projection
+$Q(\xi,v)=(0,v)$.
+Write
+\[
+  S^{-1}\mathcal A_\delta S
+  =
+  \operatorname{diag}(P_*,\Id)+\delta K.
+\]
+Applying the first-order perturbation $K$ to a vector
+$(0,v)\in E_0$ and projecting back onto $E_0$ gives,
+by \eqref{eq:conjugated-linearization},
+\[
+  QK(0,v)
+  =
+  (0,-\Gammahat\mathcal J_*v)
+  =
+  (0,-M_*v).
+\]
+Thus the first-order perturbation on this eigenspace
+is represented by $-M_*$.
+
+Since $\mathcal A_\delta$ depends analytically on $\delta$,
+perturbation theory for the isolated spectral cluster at $1$
+gives a $p$-dimensional invariant spectral subspace.
+After an analytic identification with the unperturbed
+center space, the restriction of $\mathcal A_\delta$
+to this subspace is represented by
+\[
+  T_\delta=\Id-\delta M_*+O(\delta^2).
+\]
+Continuity of the eigenvalues of
+$(T_\delta-\Id)/\delta=-M_*+O(\delta)$, counted with
+algebraic multiplicity, yields
+\[
+  \lambda_j^{\mathrm{slow}}(\delta)
+  =1-\delta\lambda_j(M_*)+o(\delta),
+  \qquad j=1,\ldots,p,
+\]
+which is \eqref{eq:slow-multipliers}.
+This argument does not require $M_*$ to be diagonalizable.
+
+By \emph{(S3)}, $\Re\lambda_j(M_*)>0$ for every $j$.
+Consequently,
+\[
+  \bigl|\lambda_j^{\mathrm{slow}}(\delta)\bigr|^2
+  =1-2\delta\Re\lambda_j(M_*)+o(\delta)<1
+\]
+for all sufficiently small positive $\delta$.
+The remaining spectrum stays in a disk of radius strictly
+less than one: indeed, choose $a$ with $r(P_*)<a<1$.
+Spectral separation and upper semicontinuity of the spectrum
+under operator-norm perturbations imply that, for sufficiently
+small $\delta$, every spectral value outside the slow cluster
+lies in $\{z:|z|<a\}$.
+Hence, after choosing $\delta_0>0$ sufficiently small,
+\[
+  r(\mathcal A_\delta)<1
+  \qquad (0<\delta<\delta_0).
+\]
+
+For each such fixed $\delta$, the principle of linearized
+stability for continuously Fréchet differentiable maps on
+Banach spaces gives
+\eqref{eq:local-exponential-stability}.
+Indeed, $r(\mathcal A_\delta)<1$ allows an equivalent norm
+in which $\|\mathcal A_\delta\|<1$; continuity of the
+derivative then makes the translated nonlinear map a
+contraction on a sufficiently small neighborhood of zero.
+
+Finally, with
+\[
+  m_*:=\min_{\lambda\in\sigma(M_*)}\Re\lambda>0,
+\]
+the spectral radius of the slow cluster satisfies
+\[
+  r_{\mathrm{slow}}(\delta)
+  =1-\delta m_*+o(\delta).
+\]
+Thus its asymptotic linear relaxation time satisfies
+\[
+  \frac{1}{-\log r_{\mathrm{slow}}(\delta)}
+  \sim\frac{1}{\delta m_*},
+  \qquad \delta\to0^+,
+\]
+and is therefore of order $\delta^{-1}$.
+\end{proof}
+{
+
+The factorization transfers pair-space stability to the
+space $\mathcal A_s$ of product probability measures,
+equipped with the metric $d_{\mathcal A_s}$ defined above.
+
+\begin{corollary}[Stability in the product-measure metric]
+\label{cor:ambient-metric-stability}
+Assume the hypotheses of
+Theorem~\ref{thm:local-stability}, and fix
+$0<\delta<\delta_0$.
+Let $\rho_*=\mu_*\otimes\delta_{\theta_*}$.
+There exists $\varepsilon_\delta>0$ such that every
+$\rho_0=\mu_0\otimes m_0\in\mathcal A_s$ satisfying
+\[
+  d_{\mathcal A_s}(\rho_0,\rho_*)<\varepsilon_\delta
+\]
+has iterates in $\mathcal A_s$ and satisfies
+\begin{equation}
+  d_{\mathcal A_s}(\STO_\delta^n\rho_0,\rho_*)
+  \leq
+  C_\delta q_\delta^n
+  d_{\mathcal A_s}(\rho_0,\rho_*),
+  \qquad n\geq0,
+  \label{eq:ambient-metric-contraction}
+\end{equation}
+where $C_\delta\geq1$ and $q_\delta\in(0,1)$ are as in
+Theorem~\ref{thm:local-stability}.
+Moreover, $\STO_\delta^n\rho_0\in\Mmono$ for every $n\geq1$.
+Thus $\rho_*$ is locally exponentially stable on
+$(\mathcal A_s,d_{\mathcal A_s})$.
+\end{corollary}
+
+\begin{proof}
+Let
+\[
+  \bar\theta_0:=\int_\Theta\theta\,dm_0(\theta).
+\]
+Since
+\[
+  \|\bar\theta_0-\theta_*\|
+  \leq
+  \int_\Theta\|\theta-\theta_*\|\,dm_0(\theta)
+  =W_1(m_0,\delta_{\theta_*}),
+\]
+we have
+\[
+  \|\mu_0-\mu_*\|_s+\|\bar\theta_0-\theta_*\|
+  \leq d_{\mathcal A_s}(\rho_0,\rho_*).
+\]
+Choose $\varepsilon_\delta>0$ sufficiently small that
+this bound ensures
+\[
+  (\mu_0-\mu_*,\bar\theta_0-\theta_*)\in\mathcal N_\delta.
+\]
+Write
+\[
+  (\mu_n,\theta_n)
+  :=\Phi_\delta^n(\mu_0,\bar\theta_0).
+\]
+By \eqref{eq:iterate-factorization}, for every $n\geq1$,
+\[
+  \STO_\delta^n\rho_0=\mu_n\otimes\delta_{\theta_n}.
+\]
+Consequently, Theorem~\ref{thm:local-stability} gives
+\[
+\begin{aligned}
+  d_{\mathcal A_s}(\STO_\delta^n\rho_0,\rho_*)
+  &=\|\mu_n-\mu_*\|_s+\|\theta_n-\theta_*\|\\
+  &\leq
+  C_\delta q_\delta^n
+  \bigl(\|\mu_0-\mu_*\|_s+\|\bar\theta_0-\theta_*\|\bigr)\\
+  &\leq
+  C_\delta q_\delta^n d_{\mathcal A_s}(\rho_0,\rho_*).
+\end{aligned}
+\]
+The case $n=0$ follows from $C_\delta\geq1$.
+\end{proof}
+
+
+
+
+\section{Linear response and the geometry of the reduced field}\label{LR}
+
+The preceding sections describe the same adaptive equilibrium from two
+complementary viewpoints.  The stationary problem is encoded by the reduced
+field
+\(
+  \overline G(\theta)=G(\mu_\theta,\theta)
+\),
+whereas the local dynamics is governed by the block linearization of the pair
+map \(\Phi_\delta\).  Linear response provides the bridge between these two
+descriptions: it differentiates the stationary physical branch
+\(\theta\mapsto\mu_\theta\) and shows that the Jacobian of
+\(\overline G\) is exactly the effective slow Jacobian that appears in the
+stability calculation.
+
+This identification is entirely a statement on the physical measure--parameter
+space.  In particular, no differentiation of the ambient barycentric STO is
+needed.  The reduction map \(\mathcal R\) is relevant for arbitrary initial
+measures through the factorization \eqref{eq:iterate-factorization}, but once a
+state has been reduced to a single controller the stationary sensitivity and
+the local stability mechanism are those of the pair dynamics.
+
+\begin{assumption}[Strong regularity of the physical family]
+\label{ass:physical-regularity}
+In addition to Assumption~\ref{ass:physical-branch}, suppose that:
+\begin{enumerate}[label=(\roman*)]
+  \item the map
+        \[
+          \mathcal U\ni\theta\longmapsto
+          P_\theta\in\mathcal L(B_s(X),B_s(X))
+        \]
+        is continuously Fr\'echet differentiable;
+  \item for every \(\theta\in\mathcal U\), the restriction
+        \((\Id-P_\theta)|_{V_s(X)}\) is boundedly invertible.  We write
+        \begin{equation}
+          R_\theta:=(\Id-P_\theta)^{-1}:V_s(X)\to V_s(X).
+          \label{eq:physical-resolvent}
+        \end{equation}
+\end{enumerate}
+\end{assumption}
+
+
+The term $(D_\theta P_\theta[v])\mu_\theta$ describes the
+first-order change produced by perturbing the controller
+while keeping the input distribution fixed.
+The inverse $R_\theta$ converts this perturbation into the
+corresponding stationary response.
+When $r(P_\theta|_{V_s(X)})<1$, this response also admits
+the convergent representation
+\[
+  D_\theta\mu_\theta[v]
+  =\sum_{n=0}^{\infty}
+    P_\theta^n(D_\theta P_\theta[v])\mu_\theta.
+\]
+
+
+The following proposition is a classical linear-response
+result, stated here in the present functional framework.
+We include its short proof for completeness.
+The response holds in the strong norm and in the
+Fr\'echet sense, so the first-order approximation is
+uniform with respect to the direction of the parameter
+perturbation.
+
+\begin{proposition}
+\label{prop:physical-LR}
+Under Assumptions~\ref{ass:physical-branch} and
+\ref{ass:physical-regularity}, the map
+\[
+  \mathcal U\ni\theta\longmapsto\mu_\theta\in B_s(X)
+\]
+is continuously Fr\'echet differentiable.  For every \(v\in\R^p\),
+\begin{equation}
+  \boxed{
+  D_\theta\mu_\theta[v]
+  =R_\theta
+  \bigl(D_\theta P_\theta[v]\bigr)\mu_\theta.}
+  \label{eq:LR-formula}
+\end{equation}
+\end{proposition}
+
+\begin{proof}
+Fix \(\theta_0\in\mathcal U\) and work on the affine space of unit-mass
+elements \(\mu_{\theta_0}+V_s(X)\).  Define
+\[
+  \mathcal F(\theta,\eta)
+  :=P_\theta(\mu_{\theta_0}+\eta)-(\mu_{\theta_0}+\eta),
+  \qquad \eta\in V_s(X).
+\]
+Because every \(P_\theta\) preserves total mass,
+\(\mathcal F(\theta,\eta)\in V_s(X)\).  Moreover,
+\[
+  \mathcal F(\theta_0,0)=0,
+  \qquad
+  D_\eta\mathcal F(\theta_0,0)=P_{\theta_0}-\Id.
+\]
+The last operator is boundedly invertible on \(V_s(X)\) by
+Assumption~\ref{ass:physical-regularity}.  The implicit-function theorem therefore gives a unique local continuously
+differentiable mass-one invariant branch in the strong topology.  For nearby
+\(\theta\), let \(\widetilde\mu_\theta\) denote this branch.  The prescribed
+invariant probability \(\mu_\theta\) also belongs to \(B_s(X)\), and
+\(\widetilde\mu_\theta-\mu_\theta\in V_s(X)\) satisfies
+\[
+  (\Id-P_\theta)(\widetilde\mu_\theta-\mu_\theta)=0.
+\]
+Invertibility of \(\Id-P_\theta\) on \(V_s(X)\) therefore gives
+\(\widetilde\mu_\theta=\mu_\theta\).  Since \(\theta_0\) is arbitrary,
+the stationary branch is continuously differentiable on \(\mathcal U\).
+
+Differentiating \(P_\theta\mu_\theta=\mu_\theta\) in the direction \(v\)
+gives
+\[
+  \bigl(D_\theta P_\theta[v]\bigr)\mu_\theta
+  +P_\theta D_\theta\mu_\theta[v]
+  =D_\theta\mu_\theta[v].
+\]
+Since \(\mu_\theta(X)=1\), one has
+\(D_\theta\mu_\theta[v]\in V_s(X)\).  Differentiating mass preservation of
+\(P_\theta\) also shows
+\( (D_\theta P_\theta[v])\mu_\theta\in V_s(X)\), so the resolvent is applied
+to an element of its stated domain.  Applying \(R_\theta\) proves
+\eqref{eq:LR-formula}.
+\end{proof}
+
+The term
+\(
+  (D_\theta P_\theta[v])\mu_\theta
+\)
+is the instantaneous first-order change in the physical distribution produced
+by a controller perturbation.  The resolvent \(R_\theta\) accumulates this
+perturbation through the stationary physical dynamics.  Thus
+\eqref{eq:LR-formula} is the stationary statistical sensitivity associated with
+the controlled plant.
+
+\begin{assumption}[Differentiability of the learning field]
+\label{ass:learning-C1}
+In addition to Assumption~\ref{ass:stationary-continuity}, suppose that the
+restriction
+\[
+  G:B_s(X)\times\mathcal U\to\R^p
+\]
+is continuously Fr\'echet differentiable in both variables.
+\end{assumption}
+
+\begin{proposition}[Derivative of the reduced stationary field]
+\label{prop:reduced-field-derivative}
+Under Assumptions~\ref{ass:physical-regularity} and
+\ref{ass:learning-C1}, the reduced field
+\(\overline G:\mathcal U\to\R^p\) is continuously Fr\'echet differentiable
+and, for every \(v\in\R^p\),
+\begin{equation}
+  D\overline G(\theta)[v]
+  =D_\mu G(\mu_\theta,\theta)
+     \bigl[D_\theta\mu_\theta[v]\bigr]
+   +D_\theta G(\mu_\theta,\theta)[v].
+  \label{eq:effective-gradient-derivative}
+\end{equation}
+Equivalently, using linear response,
+\begin{equation}
+\boxed{
+\begin{aligned}
+  D\overline G(\theta)[v]
+  &=D_\theta G(\mu_\theta,\theta)[v]\\
+  &\quad+
+  D_\mu G(\mu_\theta,\theta)
+  \left[
+    R_\theta
+    \bigl(D_\theta P_\theta[v]\bigr)\mu_\theta
+  \right].
+\end{aligned}}
+  \label{eq:effective-gradient-LR}
+\end{equation}
+\end{proposition}
+
+\begin{proof}
+The differentiability follows from
+Proposition~\ref{prop:physical-LR} and the chain rule applied to
+\(\overline G(\theta)=G(\mu_\theta,\theta)\).  Formula
+\eqref{eq:effective-gradient-derivative} is the chain rule itself, and
+\eqref{eq:effective-gradient-LR} follows from \eqref{eq:LR-formula}.
+\end{proof}
+
+Formula \eqref{eq:effective-gradient-LR} separates the direct parameter
+sensitivity of the learning rule from the indirect sensitivity caused by the
+controller-induced displacement of the stationary state distribution.  The
+second contribution is precisely the feedback effect that is absent if the
+data distribution is treated as fixed during optimization.
+
+\begin{proposition}[Stationary--dynamical Jacobian identity]
+\label{prop:effective-jacobian-identification}
+Let \(\rho_*=\mu_*\otimes\delta_{\theta_*}\) be an adaptive equilibrium at
+which the assumptions of this section and
+Assumption~\ref{ass:local-adaptive-C1} hold.  Then
+\begin{equation}
+  \boxed{
+  D\overline G(\theta_*)
+  =H_*+C_*R_*B_*
+  =\mathcal J_*.}
+  \label{eq:reduced-jacobian}
+\end{equation}
+\end{proposition}
+
+\begin{proof}
+At \(\theta_*\), Proposition~\ref{prop:physical-LR} gives
+\[
+  D_\theta\mu_{\theta_*}[v]
+  =R_*B_*v.
+\]
+Substituting this identity into
+\eqref{eq:effective-gradient-derivative}, and using the definitions
+\eqref{eq:Cstar}--\eqref{eq:Hstar}, gives
+\[
+  D\overline G(\theta_*)[v]
+  =H_*v+C_*R_*B_*v
+\]
+for every \(v\in\R^p\).
+\end{proof}
+
+\begin{remark}\label{cor:LR-stability} The identity \eqref{eq:reduced-jacobian} is the main bridge between the
+stationary and dynamical parts of the paper.  The same matrix controls both the
+local geometry of the reduced equilibrium equation
+\(\overline G(\theta)=0\) and the first-order displacement of the slow
+multipliers from the neutral value \(1\).  In particular, the stability
+criterion can be stated entirely in terms of the reduced stationary field.
+
+By this identity, the stability condition in
+Theorem~\ref{thm:local-stability} can be written as
+positive stability of $\Gammahat D\overline G(\theta_*)$.
+Under the remaining hypotheses of that theorem, this
+gives local exponential stability for sufficiently
+small positive learning rates.
+\end{remark}
+\begin{remark}\label{cor:local-uniqueness} If $D\overline G(\theta_*)$ is invertible, the
+inverse-function theorem implies that $\theta_*$ is
+an isolated zero of $\overline G$.
+For positive learning rate and injective $\Gammahat$,
+Theorem~\ref{thm:equilibrium-correspondence} then gives
+local uniqueness of the adaptive equilibrium among
+those with physical marginal in $B_s(X)$.
+We remark that this conclusion does not require the stability condition
+of Theorem~\ref{thm:local-stability}.
+\end{remark}
+
+\paragraph{A convenient positivity condition.}
+Although $G(\mu,\theta)$ is a loss gradient for fixed $\mu$,
+the reduced field $\overline G$ need not itself be a gradient:
+the dependence of $\mu_\theta$ on $\theta$ can make
+$D\overline G(\theta)$ nonsymmetric.
+
+If \(\Gammahat\) is symmetric positive definite and the symmetric part of
+\(D\overline G(\theta_*)\) is positive definite, then
+\(\Gammahat D\overline G(\theta_*)\) is positive stable.  Indeed,
+\(\Gammahat D\overline G(\theta_*)\) is similar to
+\[
+  \Gammahat^{1/2}
+  D\overline G(\theta_*)
+  \Gammahat^{1/2},
+\]
+whose symmetric part is positive definite; hence all of its eigenvalues have
+strictly positive real part.
+
+\paragraph{Degree and local index.}
+If the zeros of \(\overline G\) in \(\Omega\) are isolated and
+nondegenerate, then
+
+\[
+  \deg(\overline G,\Omega,0)
+  =
+  \sum_{\substack{\theta_i\in\Omega\\
+                   \overline G(\theta_i)=0}}
+  \operatorname{sgn}\det D\overline G(\theta_i).
+\]
+
+By Proposition~\ref{prop:effective-jacobian-identification},
+the local Brouwer index at a nondegenerate adaptive
+equilibrium is $\operatorname{sgn}\det\mathcal J_*$.
+Thus the effective slow Jacobian determines both
+the local index and, through the spectrum of
+$\Gammahat\mathcal J_*$, the stability criterion
+for small positive learning rates.
+These local conclusions complement the global
+existence criterion of Theorem~\ref{thm:degree-existence}.
+
+\input{duffing_example_section_control_explained}
+
+
+
+\section{Conclusion} \label{9}
+
+We have formulated autonomous neural adaptive control as a self-consistent transfer operator on the extended state--parameter space $\Z=X\times\ThetaSet$. 
+%Selecting a single deployed controller via the parameter barycenter yields the factorization $\STO_\delta = \iota\circ\Phi_\delta\circ\mathcal R$, ensuring that $\STO_\delta(\ProbThetaOne(\Z))\subseteq\Mmono$ in one step and eliminating artificial multi-controller equilibria.
+
+This formulation makes three analytical tools available for coupled plant--learner systems:
+\begin{enumerate}[label=(\roman*)]
+    \item \emph{Finite-dimensional stationary reduction:} When each frozen controller admits a unique invariant physical distribution $\mu_\theta \in B_s(X)$, adaptive equilibria $(\mu_*,\theta_*)$ correspond bijectively to zeros of the reduced learning field $\overline G(\theta) = G(\mu_\theta,\theta)$ (Theorem~\ref{thm:equilibrium-correspondence}). In this setting, offline-to-online deployment mismatch (\emph{Action Error}) corresponds to a nonzero physical invariance residual $\mathfrak R_A = P_{\theta_{\rm off}}\mu_{\rm off} - \mu_{\rm off} \neq 0$, and Brouwer degree certifies equilibrium existence from boundary coercivity without requiring global convexity (Theorem~\ref{thm:degree-existence}).
+    \item 
+\emph{Local stability for slow adaptation:}
+Under the differentiability assumptions of
+Theorem~\ref{thm:local-stability}, a spectral gap for
+the frozen physical operator and positive real parts
+of all eigenvalues of $\Gammahat\mathcal J_*$
+ensure local exponential convergence of both the
+physical distribution and the controller parameters
+to the adaptive equilibrium, for every sufficiently
+small positive learning rate $\delta$.
+The slow relaxation time is of order $\delta^{-1}$,
+so reducing the learning rate also slows convergence.
+    \item
+\emph{Statistical feedback and adaptive stability:}
+Linear response quantifies how the stationary physical
+distribution changes with the controller. It yields
+\[
+  D\overline G(\theta_*)
+  =H_*+C_*R_*B_*=\mathcal J_*
+\]
+(Proposition~\ref{prop:effective-jacobian-identification}).
+Here $H_*$ describes the learning response at a fixed
+physical distribution, while $C_*R_*B_*$ accounts for
+the change in that distribution induced by the controller.
+Thus the derivative of the reduced equilibrium equation
+also determines the stability of slow adaptation.
+\end{enumerate}
+
+Several extensions remain open. Applying these criteria to higher--dimensional robotic systems, such as compliant aerial interaction \cite{AuconePallottino2024,TognonPallottino2018} or exoskeleton gait adaptation \cite{lippi2021icinco}, requires verifying uniform mixing, stationary-branch differentiability, and degree boundary conditions for the corresponding physical kernels. Extending the explicit estimates from linear readouts to deep nonlinear parameterizations (motivated empirically by Section~\ref{sec:nonconvex_extension}) requires accounting for parameter symmetries, potentially on a quotient or policy space, and controlling the radial growth of internal layer gradients. Finally, incorporating finite-batch stochastic approximation noise, actor--critic states, replay buffers, or time--dependent references will require enlarging the autonomous state space or weakening the strong product--pace differentiability assumptions via two--norm transfer--operator techniques \cite{CastorriniGalatoloTanziJNS}.
+
+
+
+
+\section*{Code and Data Availability}
+The simulation code, Ulam transfer-operator discretization solvers, precomputed datasets, and figure-generation scripts reproducing all numerical experiments in Section~\ref{sec:duffing-example} and Section~\ref{sec:empirical-validation} are openly available at
+\begin{center}
+  \url{https://github.com/VittorioFreiburg/sto-adaptive-control}.
+\end{center}
+
+\begin{thebibliography}{99}
+
+\bibitem{AnnaswamyFradkov2021}
+Annaswamy, A.M., Fradkov, A.L.: A Historical Perspective of Adaptive Control and Learning. \emph{Annu. Rev. Control} \textbf{52}, 18--41 (2021). \url{https://doi.org/10.1016/j.arcontrol.2021.10.014}
+
+\bibitem{Annaswamy2023}
+Annaswamy, A.M.: Adaptive Control and Intersections with Reinforcement Learning. \emph{Annu. Rev. Control Robot. Auton. Syst.} \textbf{6}, 65--93 (2023). \url{https://doi.org/10.1146/annurev-control-062922-090153}
+
+\bibitem{AuconePallottino2024}
+Aucone, E., Geckeler, C., Morra, D., Pallottino, L., Mintchev, S.: Synergistic morphology and feedback control for traversal of unknown compliant obstacles with aerial robots. \emph{Nat. Commun.} \textbf{15}, 2646 (2024). \url{https://doi.org/10.1038/s41467-024-46967-5}
+
+\bibitem{BL}
+Bahsoun, W., Liverani, C.: Mean field coupled dynamical systems: Bifurcations and phase transitions. \emph{Adv. Math.} \textbf{463}, 110115 (2025). \url{https://doi.org/10.1016/j.aim.2025.110115}
+
+\bibitem{Baladi2014}
+Baladi, V.:
+Linear response, or else.
+In: \emph{Proceedings of the International Congress of
+Mathematicians, Seoul 2014}, Vol.~III, pp.~525--545.
+Kyung Moon Sa (2014).
+\url{https://arxiv.org/abs/1408.2937}
+
+\bibitem{BKZ}
+Bardet, J.-B., Keller, G., Zweim\"uller, R.:
+Stochastically Stable Globally Coupled Maps with Bistable
+Thermodynamic Limit.
+\emph{Commun. Math. Phys.} \textbf{292}, 237--270 (2009).
+\url{https://doi.org/10.1007/s00220-009-0854-9}
+
+\bibitem{BrownHodKalemaj2022}
+Brown, G., Hod, S., Kalemaj, I.: Performative Prediction in a Stateful World. \emph{Proc. Mach. Learn. Res.} \textbf{151}, 6045--6061 (2022). \url{https://proceedings.mlr.press/v151/brown22b.html}
+
+\bibitem{BrunkeEtAl2022}
+Brunke, L., Greeff, M., Hall, A.W., Yuan, Z., Zhou, S., Panerati, J., Schoellig, A.P.: Safe Learning in Robotics: From Learning-Based Control to Safe Reinforcement Learning. \emph{Annu. Rev. Control Robot. Auton. Syst.} \textbf{5}, 411--444 (2022). \url{https://doi.org/10.1146/annurev-control-042920-020211}
+
+\bibitem{BruntonEtAl2020}
+Brunton, S.L., Noack, B.R., Koumoutsakos, P.:
+Machine Learning for Fluid Mechanics.
+\emph{Annu. Rev. Fluid Mech.} \textbf{52}, 477--508 (2020).
+\url{https://doi.org/10.1146/annurev-fluid-010719-060214}
+
+\bibitem{CastorriniGalatoloTanziJNS}
+Castorrini, R., Galatolo, S., Tanzi, M.: The Differential of Self-Consistent Transfer Operators and the Local Convergence to Equilibrium of Mean Field Strongly Coupled Dynamical Systems. \emph{J. Nonlinear Sci.} \textbf{35}, 78 (2025). \url{https://doi.org/10.1007/s00332-025-10177-0}
+
+\bibitem{CastorriniGalatoloTanziCones2026}
+Castorrini, R., Galatolo, S., Tanzi, M.:
+Stability of Fixed Points for Nonlinear Selfconsistent
+Transfer Operators via Cone Contractions.
+\emph{Journal of Statistical Physics}
+\textbf{193}, article 27 (2026).
+\url{https://doi.org/10.1007/s10955-026-03586-2}
+
+\bibitem{DulacArnoldEtAl2021}
+Dulac-Arnold, G., Levine, N., Mankowitz, D.J., Li, J., Paduraru, C., Gowal, S., Hester, T.: Challenges of Real-World Reinforcement Learning: Definitions, Benchmarks and Analysis. \emph{Mach. Learn.} \textbf{110}, 2419--2468 (2021). \url{https://doi.org/10.1007/s10994-021-05961-4}
+
+\bibitem{GalatoloGiulietti2019}
+Galatolo, S., Giulietti, P.:
+A linear response for dynamical systems with additive noise.
+\emph{Nonlinearity}
+\textbf{32}(6), 2269--2301 (2019).
+\url{https://doi.org/10.1088/1361-6544/ab0c2e}
+
+\bibitem{GalatoloCMP}
+Galatolo, S.: Self-Consistent Transfer Operators: Invariant Measures, Convergence to Equilibrium, Linear Response and Control of the Statistical Properties. \emph{Commun. Math. Phys.} \textbf{395}, 715--772 (2022). \url{https://doi.org/10.1007/s00220-022-04444-4}
+
+\bibitem{GalatoloLucarini2026}
+Galatolo, S., Lucarini, V.:
+A Mathematical Framework for Linear Response Theory
+for Nonautonomous Systems.
+arXiv:2603.19509 (2026).
+\url{https://doi.org/10.48550/arXiv.2603.19509}
+
+\bibitem{GNT}
+Galatolo, S., Nisoli, I., Tanzi, M.:
+\emph{Certified computation of stationary measures for self-consistent
+transfer operators}, in preparation.
+
+\bibitem{goodfellow2016deep}
+Goodfellow, I., Bengio, Y., Courville, A.: \emph{Deep Learning}. MIT Press (2016)
+
+\bibitem{HairerMajda2010}
+Hairer, M., Majda, A.J.:
+A simple framework to justify linear response theory.
+\emph{Nonlinearity}
+\textbf{23}(4), 909--922 (2010).
+\url{https://doi.org/10.1088/0951-7715/23/4/008}
+
+\bibitem{HauswirthEtAl2024}
+Hauswirth, A., He, Z., Bolognani, S., Hug, G., D\"orfler, F.: Optimization Algorithms as Robust Feedback Controllers. \emph{Annu. Rev. Control} \textbf{57}, 100941 (2024). \url{https://doi.org/10.1016/j.arcontrol.2024.100941}
+
+\bibitem{hunt1992neural}
+Hunt, K.J., Sbarbaro, D., \.Zbikowski, R., Gawthrop, P.J.: Neural networks for control systems---A survey. \emph{Automatica} \textbf{28}, 1083--1112 (1992). \url{https://doi.org/10.1016/0005-1098(92)90053-I}
+
+\bibitem{kang2022lyapunovdensitymodelsconstraining}
+Kang, K., Gradu, P., Choi, J., Janner, M., Tomlin, C., Levine, S.: Lyapunov Density Models: Constraining Distribution Shift in Learning-Based Control. \emph{Proc. Mach. Learn. Res.} \textbf{162}, 10708--10733 (2022). \url{https://proceedings.mlr.press/v162/kang22a.html}
+
+\bibitem{KondaTsitsiklis2003}
+Konda, V.R., Tsitsiklis, J.N.:
+Linear stochastic approximation driven by slowly varying
+Markov chains.
+\emph{Systems \& Control Letters}
+\textbf{50}(2), 95--102 (2003).
+\url{https://doi.org/10.1016/S0167-6911(03)00132-4}
+
+\bibitem{levine2016end}
+Levine, S., Finn, C., Darrell, T., Abbeel, P.: End-to-End Training of Deep Visuomotor Policies. \emph{J. Mach. Learn. Res.} \textbf{17}, 1--40 (2016). \url{https://doi.org/10.48550/arxiv.1504.00702}
+
+\bibitem{LiWai2022}
+Li, Q., Wai, H.-T.: State Dependent Performative Prediction with Stochastic Approximation. \emph{Proc. Mach. Learn. Res.} \textbf{151}, 3164--3186 (2022). \url{https://proceedings.mlr.press/v151/li22f.html}
+
+\bibitem{lippi2018prediction}
+Lippi, V.: Prediction in the Context of a Human-Inspired Posture Control Model. \emph{Robotics and Autonomous Systems} \textbf{107}, 63--70 (2018). \url{https://doi.org/10.1016/j.robot.2018.05.012}
+
+\bibitem{lippi2021icinco}
+Lippi, V., Camardella, C., Filippeschi, A., Porcini, F.: Identification of Gait Phases with Neural Networks for Smooth Transparent Control of a Lower Limb Exoskeleton. In: \emph{Proceedings of the 18th International Conference on Informatics in Control, Automation and Robotics}, pp. 171--178 (2021). \url{https://doi.org/10.5220/0010554400002994}
+
+\bibitem{LippiActionError}
+Lippi, V.: Learning Changes the World and Then What Was Learned Has Changed: Training and Deploying Neural Networks in the Control Loop. In: \emph{Proceedings of the 23rd International Conference on Informatics in Control, Automation and Robotics}, Vol.~1, pp. 15--26 (2026). \url{https://doi.org/10.5220/0015198100004979}
+
+\bibitem{LiuLiWai2024}
+Liu, H., Li, Q., Wai, H.-T.: Two-Timescale Derivative-Free Optimization for Performative Prediction with Markovian Data. \emph{Proc. Mach. Learn. Res.} \textbf{235}, 31425--31450 (2024). \url{https://proceedings.mlr.press/v235/liu24s.html}
+
+\bibitem{MandalEtAl2023}
+Mandal, D., Triantafyllou, S., Radanovic, G.: Performative Reinforcement Learning. \emph{Proc. Mach. Learn. Res.} \textbf{202}, 23642--23680 (2023). \url{https://proceedings.mlr.press/v202/mandal23a.html}
+
+\bibitem{NarendraParthasarathy1990}
+Narendra, K.S., Parthasarathy, K.: Identification and Control of Dynamical Systems Using Neural Networks. \emph{IEEE Trans. Neural Netw.} \textbf{1}, 4--27 (1990). \url{https://doi.org/10.1109/72.80202}
+
+\bibitem{PerdomoEtAl2020}
+Perdomo, J., Zrnic, T., Mendler-D\"unner, C., Hardt, M.: Performative Prediction. \emph{Proc. Mach. Learn. Res.} \textbf{119}, 7599--7609 (2020). \url{https://proceedings.mlr.press/v119/perdomo20a.html}
+
+\bibitem{APK}
+Pikovsky, A.S., Kurths, J.: Do globally coupled maps really violate the law of large numbers? \emph{Phys. Rev. Lett.} \textbf{72}(11), 1644--1646 (1994). \url{https://doi.org/10.1103/PhysRevLett.72.1644}
+
+\bibitem{Recht2019}
+Recht, B.: A Tour of Reinforcement Learning: The View from Continuous Control. \emph{Annu. Rev. Control Robot. Auton. Syst.} \textbf{2}, 253--279 (2019). \url{https://doi.org/10.1146/annurev-control-053018-023825}
+
+\bibitem{RossGordonBagnell2011}
+Ross, S., Gordon, G., Bagnell, D.: A Reduction of Imitation Learning and Structured Prediction to No-Regret Online Learning. \emph{Proc. Mach. Learn. Res.} \textbf{15}, 627--635 (2011). \url{https://proceedings.mlr.press/v15/ross11a.html}
+
+\bibitem{sinha2023systemlevelviewoutofdistributiondata}
+Sinha, R., Sharma, A., Banerjee, S., Lew, T., Luo, R., Richards, S., Sun, Y., Schmerling, E., Pavone, M.: A System-Level View on Out-of-Distribution Data in Robotics. arXiv:2212.14020 (2023). \url{https://doi.org/10.48550/arXiv.2212.14020}
+
+\bibitem{sjoberg1995nonlinear}
+Sj\"oberg, J., Zhang, Q., Ljung, L., Benveniste, A., Delyon, B., Glorennec, P.-Y., Hjalmarsson, H., Juditsky, A.: Nonlinear black-box modeling in system identification: a unified overview. \emph{Automatica} \textbf{31}, 1691--1724 (1995). \url{https://doi.org/10.1016/0005-1098(95)00120-8}
+
+\bibitem{TangEtAl2025}
+Tang, C., Abbatematteo, B., Hu, J., Chandra, R.,
+Mart\'in-Mart\'in, R., Stone, P.:
+Deep Reinforcement Learning for Robotics: A Survey of Real-World Successes.
+\emph{Annu. Rev. Control Robot. Auton. Syst.} \textbf{8}, 153--188 (2025).
+\url{https://doi.org/10.1146/annurev-control-030323-022510}
+
+\bibitem{TognonPallottino2018}
+Tognon, M., Gabellieri, C., Pallottino, L., Franchi, A.: Aerial Co-Manipulation With Cables: The Role of Internal Force for Equilibria, Stability, and Passivity. \emph{IEEE Robot. Autom. Lett.} \textbf{3}(3), 2577--2583 (2018). \url{https://doi.org/10.1109/LRA.2018.2803811}
+
+\bibitem{VernadeEtAl2026}
+Vernade, C., Eberhard, O., White, M., D\"orfler, F., Szepesv\'ari, C., Krstic, M., Muehlebach, M.: Foundations of Reinforcement Learning and Control: Connections and New Perspectives. arXiv:2608.02433 (2026). \url{https://doi.org/10.48550/arXiv.2608.02433}
+\end{thebibliography}
+
+
+\end{document}
+

@@ -1,0 +1,12 @@
+# Normalise line endings in text files, keep binaries untouched.
+* text=auto
+*.m    text
+*.py   text
+*.tex  text
+*.md   text
+*.json text
+*.cff  text
+
+*.mat  binary
+*.pdf  binary
+*.png  binary

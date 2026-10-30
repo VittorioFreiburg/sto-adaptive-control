@@ -1,0 +1,56 @@
+cff-version: 1.2.0
+message: "If you use this software or simulation suite, please cite the accompanying paper and this repository."
+title: "Autonomous Neural Adaptive Control as a Self-Consistent Transfer Operator (Numerical Reproduction Suite)"
+type: software
+authors:
+  - family-names: "Galatolo"
+    given-names: "Stefano"
+    affiliation: "Dipartimento di Matematica, Università di Pisa"
+    email: "stefano.galatolo@unipi.it"
+    orcid: "https://orcid.org/0000-0001-9329-8936"
+  - family-names: "Lippi"
+    given-names: "Vittorio"
+    affiliation: "Calejo Hybrid Intelligence AB"
+    email: "vittorio.lippi@calejo.ai"
+    orcid: "https://orcid.org/0000-0001-5520-8974"
+contact:
+  - family-names: "Lippi"
+    given-names: "Vittorio"
+    affiliation: "Calejo Hybrid Intelligence AB"
+    email: "vittorio.lippi@calejo.ai"
+abstract: >-
+  Official simulation suite, Ulam transfer-operator discretization solvers,
+  statistical linear-response verification, precomputed Monte Carlo datasets,
+  and figure reproduction scripts for the paper 'Autonomous Neural Adaptive
+  Control as a Self-Consistent Transfer Operator' by Stefano Galatolo and
+  Vittorio Lippi (submitted to Journal of Nonlinear Science).
+keywords:
+  - "self-consistent transfer operator"
+  - "adaptive control"
+  - "neural network control"
+  - "linear response"
+  - "barycentric formulation"
+  - "Brouwer degree"
+  - "time-scale separation"
+  - "action error"
+  - "persistent excitation"
+  - "coupled dynamical systems"
+  - "Ulam discretization"
+repository-code: "https://github.com/VittorioFreiburg/sto-adaptive-control"
+license: MIT
+version: 1.0.0
+date-released: "2026-11-10"
+preferred-citation:
+  type: article
+  authors:
+    - family-names: "Galatolo"
+      given-names: "Stefano"
+      affiliation: "Dipartimento di Matematica, Università di Pisa"
+      orcid: "https://orcid.org/0000-0001-9329-8936"
+    - family-names: "Lippi"
+      given-names: "Vittorio"
+      affiliation: "Calejo Hybrid Intelligence AB"
+      orcid: "https://orcid.org/0000-0001-5520-8974"
+  title: "Autonomous Neural Adaptive Control as a Self-Consistent Transfer Operator"
+  journal: "Journal of Nonlinear Science (submitted)"
+  year: 2026

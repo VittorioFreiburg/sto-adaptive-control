@@ -1,0 +1,60 @@
+# ==============================================================================
+# .gitignore -- STO neural adaptive control reproduction suite
+#
+# Strategy: WHITELIST at the repository root. Everything in the root is ignored
+# unless it is explicitly listed below, so scratch scripts, review material,
+# draft snapshots, LaTeX build files, and one-off diagnostics accumulated during
+# development can never be committed by accident.
+# ==============================================================================
+
+# --- 1. Ignore everything at the root, then re-include the published files ----
+/*
+
+!/.gitignore
+!/.gitattributes
+!/README.md
+!/LICENSE
+!/CITATION.cff
+!/.zenodo.json
+!/requirements.txt
+!/reproduce_all.m
+
+# --- 2. Published directories --------------------------------------------------
+!/matlab/
+!/python/
+!/data/
+!/figures/
+!/results/
+!/paper/
+!/assets/
+!/docs/
+
+# --- 3. Inside published directories: drop generated / scratch content --------
+
+# LaTeX build artefacts (paper/ keeps the .tex sources only; the compiled PDF is on arXiv)
+/paper/*
+!/paper/*.tex
+
+# Python / MATLAB / editor caches and autosaves
+__pycache__/
+*.py[cod]
+*.egg-info/
+.ipynb_checkpoints/
+*.asv
+*.m~
+slprj/
+
+# Local-only text logs outside results/ (results/*.log are kept as reference output)
+/matlab/*.log
+/python/*.log
+
+# Only the six README screenshots are tracked under assets/
+/assets/*
+!/assets/*.png
+
+# --- 4. OS metadata ------------------------------------------------------------
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+.DS_Store
+._*

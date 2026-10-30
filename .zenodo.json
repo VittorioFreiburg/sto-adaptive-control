@@ -1,0 +1,55 @@
+{
+  "title": "Autonomous Neural Adaptive Control as a Self-Consistent Transfer Operator (Numerical Reproduction Suite)",
+  "description": "Official simulation suite, Ulam-Galerkin transfer-operator discretization solvers, statistical linear-response verification scripts, precomputed Monte Carlo datasets, and figure generation scripts for the paper 'Autonomous Neural Adaptive Control as a Self-Consistent Transfer Operator' by Stefano Galatolo and Vittorio Lippi (submitted to Journal of Nonlinear Science). Reproduces all numerical experiments in Section 8, including autonomous online adaptation, multi-timescale exponential relaxation, Proposition 7.7 Tikhonov regularization shifts, linear-response decomposition D\\overline{G}(\\theta_*) = H_* + C_* R_* B_*, weak vs. persistent stochastic excitation, two-phase deployment Action Error recovery, loss of linear stability across \\delta_c, and non-convex neural MLP compensation.",
+  "upload_type": "software",
+  "creators": [
+    {
+      "name": "Galatolo, Stefano",
+      "affiliation": "Dipartimento di Matematica, Università di Pisa",
+      "orcid": "0000-0001-9329-8936"
+    },
+    {
+      "name": "Lippi, Vittorio",
+      "affiliation": "Calejo Hybrid Intelligence AB",
+      "orcid": "0000-0001-5520-8974"
+    }
+  ],
+  "contributors": [
+    {
+      "name": "Lippi, Vittorio",
+      "affiliation": "Calejo Hybrid Intelligence AB",
+      "orcid": "0000-0001-5520-8974",
+      "type": "Researcher"
+    },
+    {
+      "name": "Galatolo, Stefano",
+      "affiliation": "Dipartimento di Matematica, Università di Pisa",
+      "orcid": "0000-0001-9329-8936",
+      "type": "Researcher"
+    }
+  ],
+  "keywords": [
+    "Self-Consistent Transfer Operator",
+    "Autonomous Neural Adaptive Control",
+    "Linear Response Theory",
+    "Barycentric State-Parameter Formulation",
+    "Perron-Frobenius Operator",
+    "Ulam Discretization",
+    "Brouwer Degree Theory",
+    "Time-Scale Separation",
+    "Action Error",
+    "Persistent Excitation",
+    "Coupled Dynamical Systems",
+    "Journal of Nonlinear Science"
+  ],
+  "license": "MIT",
+  "access_right": "open",
+  "related_identifiers": [
+    {
+      "relation": "isSupplementTo",
+      "identifier": "https://github.com/VittorioFreiburg/sto-adaptive-control/tree/v1.0.0",
+      "resource_type": "software",
+      "scheme": "url"
+    }
+  ]
+}
