@@ -14,20 +14,6 @@
       "orcid": "0000-0001-5520-8974"
     }
   ],
-  "contributors": [
-    {
-      "name": "Lippi, Vittorio",
-      "affiliation": "Calejo Hybrid Intelligence AB",
-      "orcid": "0000-0001-5520-8974",
-      "type": "Researcher"
-    },
-    {
-      "name": "Galatolo, Stefano",
-      "affiliation": "Dipartimento di Matematica, Università di Pisa",
-      "orcid": "0000-0001-9329-8936",
-      "type": "Researcher"
-    }
-  ],
   "keywords": [
     "Self-Consistent Transfer Operator",
     "Autonomous Neural Adaptive Control",
@@ -42,14 +28,6 @@
     "Coupled Dynamical Systems",
     "Journal of Nonlinear Science"
   ],
-  "license": "MIT",
-  "access_right": "open",
-  "related_identifiers": [
-    {
-      "relation": "isSupplementTo",
-      "identifier": "https://github.com/VittorioFreiburg/sto-adaptive-control/tree/v1.0.0",
-      "resource_type": "software",
-      "scheme": "url"
-    }
-  ]
+  "license": "mit",
+  "access_right": "open"
 }
