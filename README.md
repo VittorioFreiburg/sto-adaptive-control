@@ -1,7 +1,10 @@
 # Autonomous Neural Adaptive Control as a Self-Consistent Transfer Operator
 ### Numerical Reproduction Suite
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.24112629.svg)](https://doi.org/10.5281/zenodo.24112629)
+[![GitHub Release](https://img.shields.io/badge/GitHub-v1.0.0-181717?logo=github)](https://github.com/VittorioFreiburg/sto-adaptive-control/releases/tag/v1.0.0)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+[![License: CC BY 4.0](https://img.shields.io/badge/License-CC_BY_4.0-lightgrey.svg)](https://creativecommons.org/licenses/by/4.0/)
 [![MATLAB](https://img.shields.io/badge/MATLAB-R2020b%2B-orange.svg)](https://www.mathworks.com/products/matlab.html)
 [![Python 3.9+](https://img.shields.io/badge/Python-3.9%2B-blue.svg)](https://www.python.org/)
 
@@ -180,6 +183,16 @@ If you use this codebase or the theoretical results in your research, please cit
   journal = {Journal of Nonlinear Science},
   note    = {Submitted},
   year    = {2026}
+}
+
+@software{GalatoloLippi2026STOCode,
+  title     = {Autonomous Neural Adaptive Control as a Self-Consistent Transfer Operator (Numerical Reproduction Suite)},
+  author    = {Galatolo, Stefano and Lippi, Vittorio},
+  year      = {2026},
+  publisher = {Zenodo},
+  version   = {1.0.0},
+  doi       = {10.5281/zenodo.24112629},
+  url       = {https://github.com/VittorioFreiburg/sto-adaptive-control}
 }
 ```
 

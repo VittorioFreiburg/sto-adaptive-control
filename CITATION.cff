@@ -39,6 +39,7 @@ keywords:
 repository-code: "https://github.com/VittorioFreiburg/sto-adaptive-control"
 license: MIT
 version: 1.0.0
+doi: "10.5281/zenodo.24112629"
 date-released: "2026-11-10"
 preferred-citation:
   type: article
