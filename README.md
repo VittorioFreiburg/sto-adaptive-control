@@ -200,7 +200,7 @@ If you use this codebase or the theoretical results in your research, please cit
 
 ## Authors & maintainers
 
-- **Stefano Galatolo** — Dipartimento di Matematica, Università di Pisa (`stefano.galatolo@unipi.it`, [ORCID: 0000-0001-9329-8936](https://orcid.org/0000-0001-9329-8936))
+- **Stefano Galatolo** — Dipartimento di Matematica, Università di Pisa (`stefano.galatolo@unipi.it`, [ORCID: 0000-0003-3934-5412](https://orcid.org/0000-0003-3934-5412))
 - **Vittorio Lippi** — Calejo Hybrid Intelligence AB (`vittorio.lippi@calejo.ai`, [ORCID: 0000-0001-5520-8974](https://orcid.org/0000-0001-5520-8974))
 
 <details>
